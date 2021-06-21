@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 using BattleDyzx;
 
 public class TransformHeightTopologyFilter : IArenaReliefTopology
@@ -20,14 +19,8 @@ public class TransformHeightTopologyFilter : IArenaReliefTopology
         this.inverseTransform = transform.inverse;
     }
 
-    public float SampleElevation( float x, float y, ArenaCoordType coordType )
+    public float SampleElevation( float x, float y )
     {
-        if( ( coordType & ArenaCoordType.ScaledInput ) != 0 )
-        {
-            x /= width;
-            y /= height;
-        }
-
         Vector3 start = new Vector3( x - 0.5f, y - 0.5f, 1 );
         Vector3 end = new Vector3( x - 0.5f, y - 0.5f, 0 );
 
@@ -39,12 +32,7 @@ public class TransformHeightTopologyFilter : IArenaReliefTopology
         if( Raycast( projStart, projEnd, out projHit ) )
         {
             Vector3 hit = transform * projHit;
-            z = hit.z;
-        }
-
-        if( ( coordType & ArenaCoordType.ScaledOutput ) != 0 )
-        {
-            z *= depth;
+            z = hit.z * depth;
         }
 
         return z;
