@@ -6,6 +6,6 @@
         float height { get; }
         float depth { get; }
         
-        Vector SampleNormal( float x, float y );
+        Vector3D SampleNormal( float x, float y );
     }
 }

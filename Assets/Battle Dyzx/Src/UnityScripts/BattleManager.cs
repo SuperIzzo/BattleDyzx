@@ -20,7 +20,13 @@ namespace BattleDyzx
         private Arena arenaPrefab;
 
         [SerializeField]
-        private int numDyzx;
+        private int numPlayers;
+
+        [SerializeField]
+        private int numAI;
+
+        [SerializeField]
+        private DyzkDatabase dyzkDatabase;
 
         BattleGameState battleState;
         BattleGameDynamics battleDynamics;
@@ -42,12 +48,12 @@ namespace BattleDyzx
             float arenaRes = 1024 * 1;
 
             IArenaReliefTopology reliefTopology;
-            reliefTopology = new BumpyGenArenaHeightTopology(arenaRes, arenaRes, 256, 8);
+            reliefTopology = new BumpyGenArenaHeightTopology(arenaRes, arenaRes, 100, 8);
             reliefTopology = new ArenaHeightTopologyMemoizer(reliefTopology);
 
             IArenaNormalTopology normalTopology;
             normalTopology = new ReliefBasedNormalTopology(reliefTopology);
-            battleState.CreateArena(reliefTopology, normalTopology);
+            battleState.CreateArena(reliefTopology, normalTopology, 1.0f);
 
             Arena arena = FindObjectOfType<Arena>();
             if (!arena)
@@ -55,33 +61,62 @@ namespace BattleDyzx
                 arena = Instantiate(arenaPrefab);
             }
             arena.arenaState = battleState.arena;
+            
+            float arenaHalfWidth = battleState.arena.width * 0.5f;
+            float arenaHalfHeight = battleState.arena.width * 0.5f;
+            float arenaDepth = battleState.arena.depth;
 
             // Create the dyzx data (testing only)
-            float halfArena = arenaRes / 2;
+            int numDyzx = numPlayers + numAI;
             for (int i = 0; i < numDyzx; i++)
             {
                 float angle = Math.PI * 0.25f + Math.PI * 2 * i / numDyzx;
-                float spawnX = halfArena + Math.Cos(angle) * halfArena;
-                float spawnY = halfArena + Math.Sin(angle) * halfArena;
-                float spawnZ = arenaRes;
+                float spawnX = arenaHalfWidth + Math.Cos(angle) * arenaHalfWidth;
+                float spawnY = arenaHalfHeight + Math.Sin(angle) * arenaHalfHeight;
+                float spawnZ = arenaDepth;
 
-                Vector spawnLocation = new Vector(spawnX, spawnY, spawnZ);
-                
-                DyzkState dyzkState = battleState.CreateDyzk(null);
-                dyzkState.position = spawnLocation;
-                dyzkState.RPM = 1000;
-                dyzkState.speed = 100;
+                Vector3D spawnLocation = new Vector3D(spawnX, spawnY, spawnZ);
 
-                Dyzk dyzk = Instantiate(dyzkPrefab);
-                dyzk.dyzkState = dyzkState;
+                Dyzk dyzk = CreateRandomDyzk(spawnLocation);
+
+                if (i < numPlayers)
+                {
+                    var playerController = dyzk.gameObject.AddComponent<DyzkPlayerController>();
+                    playerController.controllerId = i;
+                }
+                else
+                {
+                    var aiController = dyzk.gameObject.AddComponent<DyzkAIController>();
+                }    
             }
+        }
+
+        Dyzk CreateRandomDyzk(Vector3D spawnLocation)
+        {
+            int dyzkIdx = Random.Range(0, dyzkDatabase.dyzkTextures.Count);
+            Texture2D dyzkTexture = dyzkDatabase.dyzkTextures[dyzkIdx];
+
+            IImageData imageData = new Texture2DImageData(dyzkTexture);
+            DyzkImageAnalysis analysis = new DyzkImageAnalysis(imageData, 0.05f);
+
+            DyzkData dyzkData = analysis.CreateDyzkData();
+            DyzkState dyzkState = battleState.CreateDyzk(dyzkData);            
+            dyzkState.position = spawnLocation;
+            dyzkState.speed = dyzkData.maxSpeed;
+            dyzkState.RPM = dyzkData.maxRPM;
+
+            Dyzk dyzk = Instantiate(dyzkPrefab);
+            dyzk.dyzkState = dyzkState;
+            dyzk.dyzkTexture = dyzkTexture;
+
+            return dyzk;
         }
 
         private void SetupDynamics()
         {
             battleDynamics = new BattleGameDynamics();
             battleState.dynamicsTimeStep = Time.fixedDeltaTime;
-            battleState.gravity = new Vector(0, 0, -1800);
+            battleState.gravity = new Vector3D(0, 0, -1800);
         }
 
         void FixedUpdate()

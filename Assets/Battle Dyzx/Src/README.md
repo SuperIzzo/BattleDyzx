@@ -13,4 +13,6 @@ System classes operate on the state and mutate it.
 In a way this is MVC - model is model, systems are controllers and unity stuff is view.
 We can swap engines preserving M and C
 
+What this means is we have our own maths and physics classes in model, hence the BattleDyzx Vector.
+
 In multiplayer games we need to only replicate the model.

@@ -13,7 +13,7 @@
             this.heightTopology = heightTopology;
         }
 
-        public Vector SampleNormal( float x, float y )
+        public Vector3D SampleNormal( float x, float y )
         {
             float heightX1 = heightTopology.SampleElevation( x - 1, y );
             float heightX2 = heightTopology.SampleElevation( x + 1, y );
@@ -24,7 +24,7 @@
             float dy = heightY1 - heightY2;
             float dz = 2.0f;
 
-            Vector normal = new Vector( dx, dy, dz);
+            Vector3D normal = new Vector3D( dx, dy, dz);
             normal.Normalize();
 
             return normal;

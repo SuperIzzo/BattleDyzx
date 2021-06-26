@@ -15,7 +15,7 @@ public static class ArenaTopologyGraphicsUtility
     {
         // TODO: Mobile uses usual normal map format, Desktop uses r = y, a = x
         // This is the desktop version
-        Vector normal = toplogy.SampleNormal( x, y );
+        Vector3D normal = toplogy.SampleNormal( x, y );
         float xNormal = ( normal.x + 1 ) / 2;
         float yNormal = ( normal.y + 1 ) / 2;
         Color color = new Color(xNormal, yNormal, normal.z, 1.0f );

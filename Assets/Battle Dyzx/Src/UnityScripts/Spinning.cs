@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class Spinning : MonoBehaviour
 {
@@ -19,6 +18,6 @@ public class Spinning : MonoBehaviour
         float deltaAngle = RPM * Time.deltaTime/60 * 360;
 
         mat.SetFloat( "_SpinBlur", -RPM / 1000 );
-        transform.Rotate( 0, deltaAngle, 0, Space.World );
+        transform.localRotation = Quaternion.Euler(0, deltaAngle, 0) * transform.localRotation;
     }
 }

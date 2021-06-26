@@ -10,14 +10,14 @@ public class ArenaQuad : Arena
     void Start()
     {
         transform.localScale = new Vector3(
-            arenaState.reliefTopology.width,
-            arenaState.reliefTopology.height,
+            arenaState.size,
+            arenaState.size,
             1.0f);
 
         transform.position = new Vector3(
-            arenaState.reliefTopology.width / 2,
+            arenaState.width / 2,
             0.0f,
-            arenaState.reliefTopology.height / 2);
+            arenaState.height / 2);
 
         Texture2D heightTexture = arenaState.reliefTopology.CreateHeightMapTexture();
         Texture2D normalTexture = arenaState.normalTopology.CreateNormalMapTexture();

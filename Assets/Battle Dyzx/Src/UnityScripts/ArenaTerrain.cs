@@ -9,20 +9,22 @@ public class ArenaTerrain : Arena
     void Start()
     {
         Terrain terrain = GetComponent<Terrain>();
+        terrain.heightmapPixelError = 0.2f;
 
         TerrainData terrainData = new TerrainData();
 
+        float scale = arenaState.scale;
         terrainData.heightmapResolution = (int) arenaState.reliefTopology.width;
         terrainData.size = new Vector3(
-            arenaState.reliefTopology.width,
-            arenaState.reliefTopology.depth,
-            arenaState.reliefTopology.height);
+            scale * arenaState.reliefTopology.width,
+            scale * arenaState.reliefTopology.depth,
+            scale * arenaState.reliefTopology.height);
 
         SplatPrototype splat = new SplatPrototype();
         splat.texture = terrainTexture;
         splat.tileSize = new Vector2(
-            arenaState.reliefTopology.width,
-            arenaState.reliefTopology.height);
+            scale * arenaState.reliefTopology.width,
+            scale * arenaState.reliefTopology.height);
 
         terrainData.splatPrototypes = new SplatPrototype[] { splat };
 

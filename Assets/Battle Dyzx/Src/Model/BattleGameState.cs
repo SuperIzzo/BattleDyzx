@@ -7,7 +7,7 @@ namespace BattleDyzx
         public List<DyzkState> dyzx = new List<DyzkState>();
         public ArenaState arena;
         public float dynamicsTimeStep;
-        public Vector gravity;
+        public Vector3D gravity;
 
         public DyzkState CreateDyzk(DyzkData dyzkData)
         {
@@ -17,11 +17,12 @@ namespace BattleDyzx
             return state;
         }
 
-        public ArenaState CreateArena(IArenaReliefTopology relief, IArenaNormalTopology normal)
+        public ArenaState CreateArena(IArenaReliefTopology relief, IArenaNormalTopology normal, float size = 1.0f)
         {
             arena = new ArenaState();
             arena.reliefTopology = relief;
             arena.normalTopology = normal;
+            arena.size = size;
             return arena;
         }
     }
