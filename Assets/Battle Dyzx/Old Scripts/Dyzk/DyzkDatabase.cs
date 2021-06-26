@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class DyzkLoader
 {
+    /*
     static bool _cacheImages = true;
     static Dictionary<string, DyzkData> _cachedData;
     static Dictionary<string, Texture2D> _cachedImages;
@@ -75,4 +76,5 @@ public class DyzkLoader
     {
 
     }
+    */
 }
