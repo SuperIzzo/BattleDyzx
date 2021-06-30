@@ -16,19 +16,6 @@
             this.z = z;
         }
 
-        public void Normalize()
-        {
-            float sqrLen = x * x + y * y + z * z;
-
-            if( sqrLen != 0.0f && sqrLen != 1.0f )
-            {
-                float invLength = FastMath.InvSqrt( sqrLen );
-                x *= invLength;
-                y *= invLength;
-                z *= invLength;
-            }
-        }
-
         public static Vector3D operator *( Vector3D v, float f )
         {
             return new Vector3D( v.x * f, v.y * f, v.z * f );
@@ -50,6 +37,24 @@
         public float Dot(Vector3D v)
         {
             return x * v.x + y * v.y + z * v.z;
+        }
+
+        public float Length()
+        {
+            return Math.Sqrt(x * x + y * y + z * z);
+        }
+
+        public void Normalize()
+        {
+            float sqrLen = x * x + y * y + z * z;
+
+            if (sqrLen != 0.0f && sqrLen != 1.0f)
+            {
+                float invLength = FastMath.InvSqrt(sqrLen);
+                x *= invLength;
+                y *= invLength;
+                z *= invLength;
+            }
         }
     }
 }
