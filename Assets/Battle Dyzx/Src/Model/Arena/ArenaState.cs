@@ -35,7 +35,7 @@ namespace BattleDyzx
         public Vector3D SampleNormalScaled(float x, float y)
         {
             float s = scale;
-            return SampleNormal(x / s, y / s) * s;
+            return SampleNormal(x / s, y / s);
         }
     }
 }
