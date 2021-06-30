@@ -116,7 +116,7 @@ namespace BattleDyzx
         {
             battleDynamics = new BattleGameDynamics();
             battleState.dynamicsTimeStep = Time.fixedDeltaTime;
-            battleState.gravity = new Vector3D(0, 0, -1800);
+            battleState.gravity = new Vector3D(0, 0, -8);
         }
 
         void FixedUpdate()
