@@ -3,6 +3,9 @@ namespace BattleDyzx
     public class DyzkImageAnalysis
     {
         const float EFFECTIVE_ALPHA_THRESHOLD = 0.5f;
+        const float DYZK_DEPTH = 10.0f; // 10 unscaled pixels
+        const float PIXEL_MASS_DENSITY = 300.0f;
+        const float GRAVITY = 9.807f; // m/s2 - just used for "weight" stat
 
         IImageData _imageData;
         int _numOpaquePixels;
@@ -10,18 +13,24 @@ namespace BattleDyzx
         float _maxRadius;
         float[] _allRadii;
         float _size;
+        float _saw;
 
-        public IImageData imageData { get; private set; }
+        public IImageData imageData => _imageData;
 
-        public int numOpaquePixels { get; private set; }
+        public float area => _numOpaquePixels * scale * scale;
 
-        public Vector2D centerOfMass { get { return _centerOfMass * scale; } }
+        public Vector2D centerOfMass => _centerOfMass * scale;        
 
-        public float maxRadius { get { return _maxRadius * scale; } }
+        public float maxRadius => _maxRadius * scale;
 
-        public float scale { get { return _size / Math.Max(_imageData.width, _imageData.height); } }
+        public float scale => _size / Math.Max(_imageData.width, _imageData.height);
 
         public float size => _size;
+        public float balance => 1.0f - (_centerOfMass - _imageData.GetSize()/2).length / _maxRadius;
+        public float saw => _saw;
+        public float volume => area * DYZK_DEPTH * scale;
+        public float mass => volume * PIXEL_MASS_DENSITY;
+        public float weight => mass * GRAVITY;
 
         public DyzkImageAnalysis()
         {
@@ -76,10 +85,17 @@ namespace BattleDyzx
                     int angleIdx = (int)(polarCoords.a / angleOfPrecision);
                     allRadii[angleIdx] = Math.Max(allRadii[angleIdx], polarCoords.r);
                 }
-            }            
-            
-            //check we have at least 1 opaque pixel
+            }
 
+            float sawFactor = 0;
+            for (int i = 0; i < allRadii.Length; i++)
+            {
+                const float PIXEL_CORRECTION = 2.0f; // raster circles can never be perfectly round (this helps us offset that)
+                sawFactor += maxRadius - allRadii[i]- PIXEL_CORRECTION;
+            }
+            sawFactor = Math.Clamp01(sawFactor / allRadii.Length / maxRadius);
+            sawFactor = Math.Sqrt(sawFactor);
+            
             //Calculate center of mass
             centerOfMass /= numOpaquePixels;
             
@@ -89,6 +105,7 @@ namespace BattleDyzx
             this._allRadii = allRadii;
             this._maxRadius = maxRadius;
             this._size = size;
+            this._saw = sawFactor;
         }
 
         public DyzkData CreateDyzkData()
@@ -96,8 +113,11 @@ namespace BattleDyzx
             DyzkData dyzkData = new DyzkData();
             dyzkData.maxRadius = maxRadius;
             dyzkData.size = size;
+            dyzkData.saw = saw;
+            dyzkData.mass = mass;
+
             dyzkData.maxSpeed = 0.4f;
-            dyzkData.maxRPM = 1000;
+            dyzkData.maxRPM = 1000;            
             return dyzkData;
         }
     }

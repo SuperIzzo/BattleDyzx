@@ -70,6 +70,11 @@ namespace BattleDyzx
             return (float)System.Math.Round(f);
         }
 
+        public static float Round(float f, int decimals)
+        {
+            return (float)System.Math.Round(f, decimals);
+        }
+
         public static float Clamp( float f, float min, float max )
         {
             return f <= min ? min
@@ -77,11 +82,11 @@ namespace BattleDyzx
                  : f;
         }
 
-        public static int Clamp( int f, int min, int max )
+        public static int Clamp( int i, int min, int max )
         {
-            return f <= min ? min
-                 : f >= max ? max
-                 : f;
+            return i <= min ? min
+                 : i >= max ? max
+                 : i;
         }
 
         public static float Clamp01( float f )
@@ -127,6 +132,15 @@ namespace BattleDyzx
         public static int Max(int a, int b)
         {
             return a > b ? a : b;
+        }
+
+        public static float Abs(float f)
+        {
+            return f >= 0 ? f : -f;
+        }
+        public static float Abs(int i)
+        {
+            return i >= 0 ? i : -i;
         }
     }
 

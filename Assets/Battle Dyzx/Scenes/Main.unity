@@ -418,6 +418,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4461122664742837207, guid: f6b8b21a01fcb044cba3dd73d2bdb991,
         type: 3}
+      propertyPath: numDummies
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4461122664742837207, guid: f6b8b21a01fcb044cba3dd73d2bdb991,
+        type: 3}
       propertyPath: numPlayers
       value: 1
       objectReference: {fileID: 0}

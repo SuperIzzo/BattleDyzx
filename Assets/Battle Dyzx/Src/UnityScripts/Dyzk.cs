@@ -8,7 +8,8 @@ namespace BattleDyzx
     {        
         public DyzkState dyzkState { get; set; }
         public Spinning spinning { get; private set; }
-        public bool debugRender;
+        public bool debugRenderMovement;
+        public bool debugRenderForces;
 
         public Texture dyzkTexture
         { 
@@ -55,15 +56,13 @@ namespace BattleDyzx
 
             transform.position = new Vector3(dyzkState.position.x, dyzkState.position.z, dyzkState.position.y) + normal*0.01f;            
             transform.rotation = Quaternion.FromToRotation(Vector3.up, normal);
-            spinning.RPM = dyzkState.RPM;            
+            spinning.RPM = dyzkState.RPM;
 
             var renderer = GetComponentInChildren<Renderer>();
-            renderer.material.SetColor("_Color", dyzkState.isInCollision ? Color.red : Color.white);
-
             float scale = dyzkState.dyzkData.size;
             renderer.transform.localScale = new Vector3(scale, scale, scale);
 
-            if (debugRender)
+            if (debugRenderMovement)
             {
                 // Draw Normal
                 Debug.DrawLine(transform.position, transform.position + normal * 100, Color.red);
@@ -75,6 +74,20 @@ namespace BattleDyzx
                 Debug.DrawLine(transform.position, transform.position + control * 100, Color.cyan);
             }
 
+            if (debugRenderForces)
+            {
+                renderer.material.SetColor("_Color", dyzkState.collisionDebug.isInCollision ? Color.red : Color.white);
+
+                var preservedForce = new Vector3(dyzkState.collisionDebug.preservedForce.x, 0, dyzkState.collisionDebug.preservedForce.y);
+                var knockbackForce = new Vector3(dyzkState.collisionDebug.knockbackForce.x, 0, dyzkState.collisionDebug.knockbackForce.y);
+                var tangentForce = new Vector3(dyzkState.collisionDebug.tangentForce.x, 0, dyzkState.collisionDebug.tangentForce.y);
+                var finalForce = new Vector3(dyzkState.collisionDebug.finalForce.x, 0, dyzkState.collisionDebug.finalForce.y);
+
+                Debug.DrawLine(transform.position, transform.position + preservedForce, Color.blue);
+                Debug.DrawLine(transform.position, transform.position + knockbackForce, Color.red);
+                Debug.DrawLine(transform.position, transform.position + tangentForce, Color.cyan);
+                Debug.DrawLine(transform.position, transform.position + finalForce, Color.white);
+            }
         }        
 
         private void OnEnable()

@@ -10,13 +10,22 @@
     {
         public int id { get; set; }
         public float maxRadius { get; set; }
-        public float weight { get; set; }
-        public float spike { get; set; }
+        public float mass { get; set; }
+        public float saw { get; set; }
         public float balance { get; set; }
         public float size { get; set; }
         public float maxSpeed { get; set; }
         public float maxRPM { get; set; }
-    }       
+    }
+
+    public struct DyzkCollisionData
+    {
+        public bool isInCollision;
+        public Vector2D preservedForce;
+        public Vector2D knockbackForce;
+        public Vector2D tangentForce;
+        public Vector2D finalForce;
+    }
 
     /// <summary> Runtime dyzk state. </summary>
     /// <remarks>
@@ -26,6 +35,10 @@
     public class DyzkState
     {
         public DyzkData dyzkData { get; set; }
+        public int ID { get; set; }
+        public float maxRadius => dyzkData.maxRadius;
+        public float saw => dyzkData.saw;
+        public float mass => dyzkData.mass;
 
         public Vector3D position;
         public Vector3D velocity;
@@ -40,7 +53,7 @@
 
         public float speed;
 
-        public bool isInCollision = false;
+        public DyzkCollisionData collisionDebug;
 
         public float RPM
         {

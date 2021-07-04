@@ -13,6 +13,7 @@ namespace BattleDyzx
         {
             var state = new DyzkState();
             state.dyzkData = dyzkData;
+            state.ID = dyzx.Count;
             dyzx.Add(state);
             return state;
         }

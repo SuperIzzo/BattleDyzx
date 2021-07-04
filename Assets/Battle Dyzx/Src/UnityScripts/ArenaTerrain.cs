@@ -9,7 +9,7 @@ public class ArenaTerrain : Arena
     void Start()
     {
         Terrain terrain = GetComponent<Terrain>();
-        terrain.heightmapPixelError = 0.2f;
+        terrain.heightmapPixelError = 0.1f;
 
         TerrainData terrainData = new TerrainData();
 
