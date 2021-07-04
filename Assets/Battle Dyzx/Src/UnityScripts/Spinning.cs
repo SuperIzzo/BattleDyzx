@@ -5,14 +5,11 @@ public class Spinning : MonoBehaviour
     public float RPM;
     private Material mat;
 
-
-	// Use this for initialization
 	void Start ()
     {
         mat = GetComponent<Renderer>().material;        
 	}
 	
-	// Update is called once per frame
 	void Update ()
     {
         float deltaAngle = RPM * Time.deltaTime/60 * 360;
