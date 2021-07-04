@@ -26,6 +26,9 @@ namespace BattleDyzx
         private int numAI;
 
         [SerializeField]
+        private int numDummies;
+
+        [SerializeField]
         private DyzkDatabase dyzkDatabase;
 
         BattleGameState battleState;
@@ -48,7 +51,7 @@ namespace BattleDyzx
             float arenaRes = 1024 * 1;
 
             IArenaReliefTopology reliefTopology;
-            reliefTopology = new BumpyGenArenaHeightTopology(arenaRes, arenaRes, 100, 8);
+            reliefTopology = new BumpyGenArenaHeightTopology(arenaRes, arenaRes, 200, 8);
             reliefTopology = new ArenaHeightTopologyMemoizer(reliefTopology);
 
             IArenaNormalTopology normalTopology;
@@ -67,7 +70,7 @@ namespace BattleDyzx
             float arenaDepth = battleState.arena.depth;
 
             // Create the dyzx data (testing only)
-            int numDyzx = numPlayers + numAI;
+            int numDyzx = numPlayers + numAI + numDummies;
             for (int i = 0; i < numDyzx; i++)
             {
                 float angle = Math.PI * 0.25f + Math.PI * 2 * i / numDyzx;
@@ -84,7 +87,7 @@ namespace BattleDyzx
                     var playerController = dyzk.gameObject.AddComponent<DyzkPlayerController>();
                     playerController.controllerId = i;
                 }
-                else
+                else if (i < numPlayers + numAI)
                 {
                     var aiController = dyzk.gameObject.AddComponent<DyzkAIController>();
                 }    
@@ -116,7 +119,7 @@ namespace BattleDyzx
         {
             battleDynamics = new BattleGameDynamics();
             battleState.dynamicsTimeStep = Time.fixedDeltaTime;
-            battleState.gravity = new Vector3D(0, 0, -8);
+            battleState.gravity = new Vector3D(0, 0, -4);
         }
 
         void FixedUpdate()
