@@ -1,0 +1,16 @@
+{
+    "name": "BattleDyzx",
+    "rootNamespace": "",
+    "references": [
+        "GUID:965d17827c84ae944845d41ff3565845"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
