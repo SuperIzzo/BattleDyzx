@@ -6,8 +6,10 @@ Obj/
 UnityGenerated/
 Library/
 Logs/
+Builds/
 Assets/UnityVS/
 Assets/UnityVS.meta
+.vs/
  
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
