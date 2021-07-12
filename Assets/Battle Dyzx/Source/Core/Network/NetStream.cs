@@ -24,6 +24,11 @@ namespace BattleDyzx
             this.data = data;
         }
 
+        public byte[] GetData()
+        {
+            return data;
+        }
+
         public byte PeekByte()
         {
             return data[position];
