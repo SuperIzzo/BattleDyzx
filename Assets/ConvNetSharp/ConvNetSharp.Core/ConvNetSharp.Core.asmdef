@@ -1,0 +1,16 @@
+{
+    "name": "ConvNetSharp-Core",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f140e439d746bf540afce1065664b2bb"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}

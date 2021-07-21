@@ -1,0 +1,17 @@
+{
+    "name": "ConvNetSharp-Flow",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3525aed6ee7576b44b20d24b4ac36922",
+        "GUID:f140e439d746bf540afce1065664b2bb"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
