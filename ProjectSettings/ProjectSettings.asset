@@ -147,7 +147,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.SuperIzzo.BattleDyzx
-    Standalone: unity.DefaultCompany.Battle Dyzx
+    Standalone: com.SuperIzzo.BattleDyzx
     Tizen: com.Company.ProductName
     iPhone: com.Company.ProductName
     tvOS: com.Company.ProductName
