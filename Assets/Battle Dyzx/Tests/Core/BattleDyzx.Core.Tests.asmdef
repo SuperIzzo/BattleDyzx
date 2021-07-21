@@ -1,10 +1,10 @@
 {
-    "name": "BattleDyzxCore-Tests",
+    "name": "BattleDyzx-Core-Tests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "BattleDyzxCore"
+        "BattleDyzx-Core"
     ],
     "includePlatforms": [
         "Editor"
