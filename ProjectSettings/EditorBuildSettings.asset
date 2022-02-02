@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Battle Dyzx/Scenes/Main.unity
+    path: Assets/Battle Dyzx/Scenes/Battle/Main.unity
     guid: b82dd4e29ffef914d986ee31283c2f79
   m_configObjects: {}

@@ -63,6 +63,7 @@ namespace ConvNetSharp.Core.Layers
         {
             this.OutputActivationGradients = outputGradient;
 
+
             // compute gradient wrt weights and data
             using var reshapedInput = this.InputActivation.ReShape(1, 1, -1, this.InputActivation.Shape.Dimensions[3]);
             using var reshapedInputGradients = this.InputActivationGradients.ReShape(1, 1, -1, this.InputActivationGradients.Shape.Dimensions[3]);
