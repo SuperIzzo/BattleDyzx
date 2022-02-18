@@ -48,22 +48,22 @@ namespace BattleDyzx
 
         public static bool operator >(NetPacketId a, NetPacketId b)
         {
-            return a.id - b.id <= UInt32.MaxValue / 2 + 1;
+            return a.id - b.id < b.id - a.id;
         }
 
         public static bool operator <(NetPacketId a, NetPacketId b)
         {
-            return a.id - b.id > UInt32.MaxValue / 2 + 1;
+            return a.id - b.id > b.id - a.id;
         }
 
         public static bool operator >=(NetPacketId a, NetPacketId b)
         {
-            return a.id == b.id || a.id - b.id < UInt32.MaxValue / 2;
+            return a.id == b.id || a.id - b.id < b.id - a.id;
         }
 
         public static bool operator <=(NetPacketId a, NetPacketId b)
         {
-            return a.id == b.id || a.id - b.id > UInt32.MaxValue / 2;
+            return a.id == b.id || a.id - b.id > b.id - a.id;
         }
     }
 }

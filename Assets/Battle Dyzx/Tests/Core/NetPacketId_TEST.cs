@@ -58,23 +58,23 @@ namespace BattleDyzx.Test
             NetPacketId idD = new NetPacketId(UInt32.MaxValue / 2 + 10);
 
             Assert.True(idA > idB, "PacketId 10 > h+12 failed");
-            Assert.False(idA < idB, "PacketId !(10 < h+12) failed");
-
-            Assert.True(idB < idA, "PacketId h+12 < 10 failed");
             Assert.False(idB > idA, "PacketId !(h+12 > 10) failed");
 
-            Assert.True(idA < idC, "PacketId 10 < h+11 failed");
-            Assert.False(idA > idC, "PacketId !(10 > h+11) failed");
-
-            Assert.True(idC > idA, "PacketId h+11 > 10 failed");
+            Assert.True(idB < idA, "PacketId h+12 < 10 failed");
+            Assert.False(idA < idB, "PacketId !(10 < h+12) failed");
+            
+            // Comparison on the very opposite end is false both ways
+            Assert.False(idA < idC, "PacketId !(10 < h+11) failed");
             Assert.False(idC < idA, "PacketId !(h+11 < 10) failed");
 
-            /*
-            Assert.True(idA > idC, "PacketId 10 < h+11 failed");
-            Assert.True(idC < idA, "PacketId h+11 > 10 failed");
-            Assert.True(idA < idD, "PacketId 10 < h+10 failed");
-            Assert.True(idD > idA, "PacketId h+10 > 10 failed");
-            */
+            Assert.False(idC > idA, "PacketId !(h+11 > 10) failed");
+            Assert.False(idA > idC, "PacketId !(10 > h+11) failed");
+
+            Assert.True(idA < idD, "PacketId (10 < h+10) failed");
+            Assert.False(idD < idA, "PacketId !(h+10 < 10) failed");
+
+            Assert.True(idD > idA, "PacketId !(h+10 > 10) failed");
+            Assert.False(idA > idD, "PacketId !(10 > h+10) failed");
         }
     }
 }
