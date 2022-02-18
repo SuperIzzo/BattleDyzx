@@ -67,10 +67,14 @@ namespace BattleDyzx
 
         void HandleDyzkCollision(DyzkState dyzkA, DyzkState dyzkB)
         {
-            // 1 means dyzx are independed, 0.5 means velocities are share half-half, 0 means velocity only affects opponent
+            // Force distribution between the two dyzx,
+            // i.e. how much does the velocity of one dyzk affect the other
+            // 1.0 - means dyzx are independent (A knocks back B, and B knocks back A)
+            // 0.5 - means velocities are shared half-half (half of A's velocity goes back to it)
+            // 0.0 - means velocity only affects opponent 
             const float FORCE_DISTRIBUTION = 0.8f;
 
-
+            // Likewise tangent force distribution is about how much tantial rotation force is shared
             const float TANGENT_FORCE_DISTRIBUTION = 0.8f;
 
             float radDistance = dyzkA.maxRadius + dyzkB.maxRadius;
@@ -106,7 +110,7 @@ namespace BattleDyzx
             // Calculate masses
             float totalMass = dyzkA.mass + dyzkB.mass;
             float massRateA = dyzkA.mass / totalMass;
-            float massRateB = dyzkB.mass / totalMass;
+            float massRateB = 1.0f - massRateA;
 
             // How much dyzkA's momentum is affecting dyzkB relatively and vice-versa
             // This is a function of both if B is moving away, A exerts higher force
@@ -126,9 +130,9 @@ namespace BattleDyzx
             Vector2D knockbackForceA = hitNormal2D * knockbackAmountA;
             Vector2D knockbackForceB = hitNormal2D * -knockbackAmountB;
 
-            // How much tangential force to apply (tangential force is generate from spinning)
+            // How much tangential force to apply (tangential force is generated from spinning)
             // TODO: Tangential direction should be relative to the spin direction
-            // TODO: It should also be relative to the radiuses (converting torque to linear)
+            // TODO: It should also be relative to the radii (converting torque to linear)
             float tangentTerm = (dyzkA.saw + dyzkB.saw) * 0.0001f;
             float tangentAmountA = tangentTerm * massRateA * (dyzkA.angularVelocity * TANGENT_FORCE_DISTRIBUTION + dyzkB.angularVelocity * (1 - TANGENT_FORCE_DISTRIBUTION));
             float tangentAmountB = tangentTerm * massRateB * (dyzkB.angularVelocity * TANGENT_FORCE_DISTRIBUTION + dyzkA.angularVelocity * (1 - TANGENT_FORCE_DISTRIBUTION));
