@@ -23,7 +23,7 @@ namespace BattleDyzx
 
         public Vector3D SampleNormal(float x, float y)
         {
-            return normalTopology != null ? normalTopology.SampleNormal(x, y) : Vector3D.up;
+            return normalTopology != null ? normalTopology.SampleNormal(x, y) : Vector3D.forward;
         }
 
         public float SampleElevationScaled(float x, float y)

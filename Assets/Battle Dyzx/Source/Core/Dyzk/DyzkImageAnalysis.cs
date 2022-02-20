@@ -114,6 +114,7 @@ namespace BattleDyzx
             dyzkData.maxRadius = maxRadius;
             dyzkData.size = size;
             dyzkData.saw = saw;
+            dyzkData.balance = balance;
             dyzkData.mass = mass;
 
             dyzkData.maxSpeed = 0.4f;

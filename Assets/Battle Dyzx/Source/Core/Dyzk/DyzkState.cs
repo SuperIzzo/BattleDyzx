@@ -35,10 +35,53 @@
     public class DyzkState
     {
         public DyzkData dyzkData { get; set; }
-        public int ID { get; set; }
-        public float maxRadius => dyzkData.maxRadius;
-        public float saw => dyzkData.saw;
-        public float mass => dyzkData.mass;
+        public int id
+        {
+            get => dyzkData.id;
+            set { dyzkData.id = value; }
+        }
+
+        public float maxRadius
+        {
+            get => dyzkData.maxRadius;
+            set { dyzkData.maxRadius = value; } 
+        }
+
+        public float saw
+        {
+            get => dyzkData.saw;
+            set { dyzkData.saw = value; }
+        }
+
+        public float balance
+        {
+            get => dyzkData.balance;
+            set { dyzkData.balance = value; }
+        }
+
+        public float mass
+        {
+            get => dyzkData.mass;
+            set { dyzkData.mass = value; }
+        }
+
+        public float size
+        {
+            get => dyzkData.size;
+            set { dyzkData.size = value; }
+        }
+
+        public float maxSpeed
+        {
+            get => dyzkData.maxSpeed;
+            set { dyzkData.maxSpeed = value; }
+        }
+
+        public float maxRPM
+        {
+            get => dyzkData.maxRPM;
+            set { dyzkData.maxRPM = value; }
+        }
 
         public Vector3D position;
         public Vector3D velocity;
