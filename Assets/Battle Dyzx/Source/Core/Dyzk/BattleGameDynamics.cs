@@ -77,9 +77,6 @@ namespace BattleDyzx
             // Likewise tangent force distribution is about how much tantial rotation force is shared
             const float TANGENT_FORCE_DISTRIBUTION = 0.8f;
 
-            // Tangent stickiness is how much the tangent force makes the dyzx stick to each other (drives them towards collision)
-            const float TANGENT_DIRECTION_STICKINESS = 0.3f;
-
             // Knockback negation is when dyzx are pushing towards the hit, part of the knockback can be negated.
             // Conversly pushing away from the hit increases knockback received from the other dyzk.
             // How is knockback negation distributed between players (1 - defender is sole negator, 0 - attacker is sole negator)
@@ -88,6 +85,9 @@ namespace BattleDyzx
 
             // How much does angular velocities factor into the knockback
             const float SPIN_KNOCKBACK_FACTOR = 0.01f;
+
+            // How much tangent force to apply
+            const float TANGENT_FACTOR = 0.1f;
 
             float radDistance = dyzkA.maxRadius + dyzkB.maxRadius;
             float radRatio = dyzkA.maxRadius / radDistance;
@@ -174,16 +174,16 @@ namespace BattleDyzx
             Vector2D knockbackForceB = knockbackDirectionB * knockbackAmountB;
 
             // How much tangential force to apply (tangential force is generated from spinning)
-            // TODO: Tangential direction should be relative to the spin direction
-            // TODO: It should also be relative to the radii (converting torque to linear)
-            float tangentTerm = (dyzkA.saw + dyzkB.saw) * 0.0f; //0.0001f;
-            float tangentAmountA = tangentTerm * massRateB * (dyzkB.angularVelocity * TANGENT_FORCE_DISTRIBUTION + dyzkA.angularVelocity * (1 - TANGENT_FORCE_DISTRIBUTION));
-            float tangentAmountB = tangentTerm * massRateA * (dyzkA.angularVelocity * TANGENT_FORCE_DISTRIBUTION + dyzkB.angularVelocity * (1 - TANGENT_FORCE_DISTRIBUTION));
 
-            Vector2D tangentDirA = new Vector2D(hitNormal2D.y, -hitNormal2D.x);
-            Vector2D tangentDirB = new Vector2D(-hitNormal2D.y, hitNormal2D.x);
-            Vector2D tangentForceA = (tangentDirA * (1.0f - TANGENT_DIRECTION_STICKINESS) + hitNormal2D * TANGENT_DIRECTION_STICKINESS) * tangentAmountA;
-            Vector2D tangentForceB = (tangentDirB * (1.0f - TANGENT_DIRECTION_STICKINESS) - hitNormal2D * TANGENT_DIRECTION_STICKINESS) * tangentAmountB;
+            // L = m*v*r, but we factor in mass later as a proportion
+            float dyzkAAngularMomentum = dyzkA.angularVelocity * dyzkA.maxRadius;
+            float dyzkBAngularMomentum = dyzkB.angularVelocity * dyzkB.maxRadius;
+            float tangentAmountA = massRateB * (dyzkBAngularMomentum * TANGENT_FORCE_DISTRIBUTION + dyzkAAngularMomentum * (1 - TANGENT_FORCE_DISTRIBUTION)) * TANGENT_FACTOR;
+            float tangentAmountB = massRateA * (dyzkAAngularMomentum * TANGENT_FORCE_DISTRIBUTION + dyzkBAngularMomentum * (1 - TANGENT_FORCE_DISTRIBUTION)) * TANGENT_FACTOR;
+            Vector2D tangentDirA = new Vector2D(-hitNormal2D.y, hitNormal2D.x);
+            Vector2D tangentDirB = -tangentDirA;
+            Vector2D tangentForceA = tangentDirA * tangentAmountA;
+            Vector2D tangentForceB = tangentDirB * tangentAmountB;
 
             Vector2D finalForceA = preservedForceA + knockbackForceA + tangentForceA;
             Vector2D finalForceB = preservedForceB + knockbackForceB + tangentForceB;

@@ -271,11 +271,20 @@ namespace BattleDyzx.Test
             DyzkState dyzkAttackOnNoControl = CreateDyzkA();
             DyzkState dyzkDefenceControlTowards = CreateDyzkB();
             DyzkState dyzkDefenceControlAway = CreateDyzkB();
-            DyzkState dyzkDefenceNoControl = CreateDyzkB();            
+            DyzkState dyzkDefenceNoControl = CreateDyzkB();
 
             dyzkAttackOnControlTowards.velocity = Vector3D.right;
             dyzkAttackOnControlAway.velocity = Vector3D.right;
             dyzkAttackOnNoControl.velocity = Vector3D.right;
+
+            // Set rotation to 0, to ignore the effects of tangential forces
+            // because this is easier than factoring it (tangential force is small)
+            dyzkAttackOnControlTowards.RPM = 0;
+            dyzkAttackOnControlAway.RPM = 0;
+            dyzkAttackOnNoControl.RPM = 0;
+            dyzkDefenceControlTowards.RPM = 0;
+            dyzkDefenceControlAway.RPM = 0;
+            dyzkDefenceNoControl.RPM = 0;
 
             Vector3D controlUpTowards = (Vector3D.left + Vector3D.up).normal;
             Vector3D controlUpAway = (Vector3D.right + Vector3D.up).normal;
@@ -299,27 +308,27 @@ namespace BattleDyzx.Test
         [Test]
         public void SameSpinDyzxReceiveMoreKnockbackThanOppositeSpinDyzx()
         {
-            DyzkState dyzkAttackCCWOnCCW = CreateDyzkA();
-            DyzkState dyzkAttackCCWOnCW = CreateDyzkA();            
-            DyzkState dyzkDefenceCCW = CreateDyzkB();
+            DyzkState dyzkAttackCWOnCW = CreateDyzkA();
+            DyzkState dyzkAttackCWOnCCW = CreateDyzkA();
             DyzkState dyzkDefenceCW = CreateDyzkB();
+            DyzkState dyzkDefenceCCW = CreateDyzkB();
 
-            dyzkAttackCCWOnCCW.velocity = Vector3D.right;
-            dyzkAttackCCWOnCW.velocity = Vector3D.right;
+            dyzkAttackCWOnCW.velocity = Vector3D.right;
+            dyzkAttackCWOnCCW.velocity = Vector3D.right;
 
-            dyzkAttackCCWOnCCW.RPM = 1000;
-            dyzkAttackCCWOnCW.RPM = 1000;            
-            dyzkDefenceCCW.RPM = 1000;
-            dyzkDefenceCW.RPM = -1000;
+            dyzkAttackCWOnCW.RPM = 1000;
+            dyzkAttackCWOnCCW.RPM = 1000;
+            dyzkDefenceCW.RPM = 1000;
+            dyzkDefenceCCW.RPM = -1000;
 
-            battleDynamics.HandleDyzkCollision(dyzkAttackCCWOnCCW, dyzkDefenceCCW);
-            battleDynamics.HandleDyzkCollision(dyzkAttackCCWOnCW, dyzkDefenceCW);
+            battleDynamics.HandleDyzkCollision(dyzkAttackCWOnCW, dyzkDefenceCW);
+            battleDynamics.HandleDyzkCollision(dyzkAttackCWOnCCW, dyzkDefenceCCW);
 
             // Note for attackers we need to factor in direction as they have prior velocity (preserved momentum)
-            float attackerSameSpinReceivedKnockback      = dyzkAttackCCWOnCCW.velocity.length * dyzkAttackCCWOnCCW.velocity.Dot(Vector3D.left);
-            float attackerDifferentSpinReceivedKnockback = dyzkAttackCCWOnCW.velocity.length * dyzkAttackCCWOnCW.velocity.Dot(Vector3D.left);
-            float defenderSameSpinKnockback              = dyzkDefenceCCW.velocity.length;
-            float defenderDifferentSpinReceivedKnockback = dyzkDefenceCW.velocity.length;
+            float attackerSameSpinReceivedKnockback = dyzkAttackCWOnCW.velocity.length * dyzkAttackCWOnCW.velocity.normal.Dot(Vector3D.left);
+            float attackerDifferentSpinReceivedKnockback = dyzkAttackCWOnCCW.velocity.length * dyzkAttackCWOnCCW.velocity.normal.Dot(Vector3D.left);
+            float defenderSameSpinKnockback = dyzkDefenceCW.velocity.length;
+            float defenderDifferentSpinReceivedKnockback = dyzkDefenceCCW.velocity.length;
 
             Assert.Greater(attackerSameSpinReceivedKnockback, attackerDifferentSpinReceivedKnockback, "Same spin dyzx should receive more knockback (attacking).");
             Assert.Greater(defenderSameSpinKnockback, defenderDifferentSpinReceivedKnockback, "Same spin dyzx should receive more knockback when (defending).");
@@ -331,7 +340,7 @@ namespace BattleDyzx.Test
             // H - high saw; L - low saw;  LH - low saw attack on high saw defence
             DyzkState dyzkAttackLL = CreateDyzkA();
             DyzkState dyzkAttackLH = CreateDyzkA();
-            DyzkState dyzkAttackHL = CreateDyzkA();            
+            DyzkState dyzkAttackHL = CreateDyzkA();
             DyzkState dyzkAttackHH = CreateDyzkA();
 
             DyzkState dyzkDefenceLL = CreateDyzkB();
@@ -355,10 +364,10 @@ namespace BattleDyzx.Test
             battleDynamics.HandleDyzkCollision(dyzkAttackHH, dyzkDefenceHH);
 
             // Note for attackers we need to factor in direction as they have prior velocity (preserved momentum)
-            float attackKnockbackLL = dyzkAttackLL.velocity.length * dyzkAttackLL.velocity.Dot(Vector3D.left);
-            float attackKnockbackLH = dyzkAttackLH.velocity.length * dyzkAttackLH.velocity.Dot(Vector3D.left);
-            float attackKnockbackHL = dyzkAttackHL.velocity.length * dyzkAttackHL.velocity.Dot(Vector3D.left);
-            float attackKnockbackHH = dyzkAttackHH.velocity.length * dyzkAttackHH.velocity.Dot(Vector3D.left);
+            float attackKnockbackLL = dyzkAttackLL.velocity.length * dyzkAttackLL.velocity.normal.Dot(Vector3D.left);
+            float attackKnockbackLH = dyzkAttackLH.velocity.length * dyzkAttackLH.velocity.normal.Dot(Vector3D.left);
+            float attackKnockbackHL = dyzkAttackHL.velocity.length * dyzkAttackHL.velocity.normal.Dot(Vector3D.left);
+            float attackKnockbackHH = dyzkAttackHH.velocity.length * dyzkAttackHH.velocity.normal.Dot(Vector3D.left);
 
             float defenceKnockbackLL = dyzkDefenceLL.velocity.length;
             float defenceKnockbackLH = dyzkDefenceLH.velocity.length;
@@ -374,6 +383,68 @@ namespace BattleDyzx.Test
             Assert.Greater(attackKnockbackHH, attackKnockbackHL, "High saw factor attack and defence increases received knockback for the attacker (HL).");
             Assert.Greater(defenceKnockbackHH, defenceKnockbackLH, "High saw factor attack and defence increases applied knockback to the defender (LH).");
             Assert.Greater(defenceKnockbackHH, defenceKnockbackHL, "High saw factor attack and defence increases applied knockback to the defender (HL).");
+        }
+
+        [Test]
+        public void SpinDyzxApplyTangentialForce()
+        {
+            DyzkState dyzkAttackSpinningCW = CreateDyzkA();
+            DyzkState dyzkAttackSpinningCCW = CreateDyzkA();
+            DyzkState dyzkAttackNotSpinning = CreateDyzkA();
+
+            DyzkState dyzkDefenceVsSpinningCW = CreateDyzkB();
+            DyzkState dyzkDefenceVsSpinningCCW = CreateDyzkB();
+            DyzkState dyzkDefenceVsNotSpinning = CreateDyzkB();
+
+            dyzkAttackSpinningCW.velocity = Vector3D.right;
+            dyzkAttackSpinningCCW.velocity = Vector3D.right;
+            dyzkAttackNotSpinning.velocity = Vector3D.right;
+
+            dyzkAttackSpinningCW.RPM = 2000;
+            dyzkAttackSpinningCCW.RPM = -2000;
+            dyzkAttackNotSpinning.RPM = 0;
+
+            dyzkDefenceVsSpinningCW.RPM = 0;
+            dyzkDefenceVsSpinningCCW.RPM = 0;
+            dyzkDefenceVsNotSpinning.RPM = 0;
+
+            battleDynamics.HandleDyzkCollision(dyzkAttackSpinningCW, dyzkDefenceVsSpinningCW);
+            battleDynamics.HandleDyzkCollision(dyzkAttackSpinningCCW, dyzkDefenceVsSpinningCCW);
+            battleDynamics.HandleDyzkCollision(dyzkAttackNotSpinning, dyzkDefenceVsNotSpinning);
+
+            float cwDownTangentKnockback = dyzkAttackSpinningCW.velocity.Dot(Vector3D.down);
+            float noSpinDownTangentKnockback = dyzkAttackNotSpinning.velocity.Dot(Vector3D.down);
+
+            float ccwUpTangentKnockback = dyzkAttackSpinningCCW.velocity.Dot(Vector3D.up);
+            float noSpinUpTangentKnockback = dyzkAttackNotSpinning.velocity.Dot(Vector3D.up);
+
+            Assert.Greater(cwDownTangentKnockback, noSpinDownTangentKnockback, "CW spinning dyzk should apply a bit of CW knockback when attacking.");
+            Assert.Greater(ccwUpTangentKnockback, noSpinUpTangentKnockback, "CCW spinning dyzk should apply a bit of CCW knockback when attacking.");
+        }
+
+        [Test]
+        public void FastSpinDyzxApplyMoreTangentialForce()
+        {
+            DyzkState dyzkAttackSpinning3000RPM = CreateDyzkA();
+            DyzkState dyzkAttackSpinning1000RPM = CreateDyzkA();
+            DyzkState dyzkDefenceVs3000RPM = CreateDyzkB();
+            DyzkState dyzkDefenceVs1000RPM = CreateDyzkB();
+
+            dyzkAttackSpinning3000RPM.velocity = Vector3D.right;
+            dyzkAttackSpinning1000RPM.velocity = Vector3D.right;
+
+            dyzkAttackSpinning3000RPM.RPM = 3000;
+            dyzkAttackSpinning1000RPM.RPM = 1000;
+            dyzkDefenceVs3000RPM.RPM = 0;
+            dyzkDefenceVs1000RPM.RPM = 0;
+
+            battleDynamics.HandleDyzkCollision(dyzkAttackSpinning3000RPM, dyzkDefenceVs3000RPM);
+            battleDynamics.HandleDyzkCollision(dyzkAttackSpinning1000RPM, dyzkDefenceVs1000RPM);
+
+            float speed3000RPM = dyzkDefenceVs3000RPM.velocity.length;
+            float speed1000RPM = dyzkDefenceVs1000RPM.velocity.length;
+
+            Assert.Greater(speed3000RPM, speed1000RPM, "Faster spinning dyzk should apply more tangent force.");
         }
     }
 }
