@@ -4,7 +4,7 @@ using UnityEngine.TestTools;
 
 namespace BattleDyzx.Test
 {
-    public class BattleGameDynamics_TEST
+    public class CombatKnockback_TEST
     {
         private Vector3D hitPoint = Vector3D.zero;
         private Vector3D hitNormal = Vector3D.right;
