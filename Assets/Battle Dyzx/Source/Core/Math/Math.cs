@@ -45,6 +45,11 @@ namespace BattleDyzx
             return (float)System.Math.Sqrt( f );
         }
 
+        public static float Exp(float f)
+        {
+            return (float)System.Math.Exp(f);
+        }
+
         public static float Atan(float d)
         {
             return (float)System.Math.Atan(d);
@@ -138,9 +143,23 @@ namespace BattleDyzx
         {
             return f >= 0 ? f : -f;
         }
-        public static float Abs(int i)
+        public static int Abs(int i)
         {
             return i >= 0 ? i : -i;
+        }
+
+        public static float Sign(float f)
+        {
+            return f > 0 ? 1.0f :
+                   f < 0 ? -1.0f :
+                   0.0f;
+        }
+
+        public static int Sign(int i)
+        {
+            return i > 0 ? 1 :
+                   i < 0 ? -1 :
+                   0;
         }
     }
 

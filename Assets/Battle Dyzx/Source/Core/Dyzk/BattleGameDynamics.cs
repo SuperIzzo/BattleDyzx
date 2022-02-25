@@ -67,6 +67,10 @@ namespace BattleDyzx
 
         public void HandleDyzkCollision(DyzkState dyzkA, DyzkState dyzkB)
         {
+            //=========================================================================
+            // Constants
+            //-------------------------
+
             // Force distribution between the two dyzx,
             // i.e. how much does the velocity of one dyzk affect the other
             // 1.0 - means dyzx are independent (A knocks back B, and B knocks back A)
@@ -88,6 +92,26 @@ namespace BattleDyzx
 
             // How much tangent force to apply
             const float TANGENT_FACTOR = 0.1f;
+
+            // A scale factor to increase or decrease RPM damage based on rotation
+            const float RPM_DAMAGE_ROTATION_SCALE = 1.0f;
+
+            // A scale factor to increase or decrease RPM damage based on speed
+            const float RPM_DAMAGE_SPEED_SCALE = 1.0f;
+
+            // A scale factor to increase or decrease RPM damage based on direction (tangent)
+            const float RPM_DAMAGE_SLASH_SCALE = 1.0f;
+
+            // How to distribute speed damage between attacker and defender
+            const float SPEED_DAMAGE_DISTRIBUTION = 0.8f;
+
+            // How to distribute saw damage between attacker and defender
+            const float SAW_DAMAGE_DISTRIBUTION = 0.7f;
+            
+
+            //=========================================================================
+            // Useful variables
+            //-------------------------
 
             float radDistance = dyzkA.maxRadius + dyzkB.maxRadius;
             float radRatio = dyzkA.maxRadius / radDistance;
@@ -123,6 +147,10 @@ namespace BattleDyzx
             float totalMass = dyzkA.mass + dyzkB.mass;
             float massRateA = dyzkA.mass / totalMass;
             float massRateB = 1.0f - massRateA;
+
+            //=========================================================================
+            // Knockback
+            //-------------------------
 
             // How much dyzkA's momentum is affecting dyzkB relatively and vice-versa
             // This is a function of both if B is moving away, A exerts higher force
@@ -200,8 +228,30 @@ namespace BattleDyzx
                 dyzkB.position.y = dyzkB.position.y + hitNormal.y * intersectionAmount;
             }
 
+            //=========================================================================
+            // RPM Damage
+            //-------------------------
+            float speedBasedRPMDamageA = (speedB * SPEED_DAMAGE_DISTRIBUTION + speedA * (1 - SPEED_DAMAGE_DISTRIBUTION)) * RPM_DAMAGE_SPEED_SCALE;
+            float speedBasedRPMDamageB = (speedA * SPEED_DAMAGE_DISTRIBUTION + speedB * (1 - SPEED_DAMAGE_DISTRIBUTION)) * RPM_DAMAGE_SPEED_SCALE;
+            float rotationBasedRPMDamageA = (dyzkB.saw * SAW_DAMAGE_DISTRIBUTION + dyzkA.saw * (1.0f - SAW_DAMAGE_DISTRIBUTION)) * RPM_DAMAGE_ROTATION_SCALE;
+            float rotationBasedRPMDamageB = (dyzkA.saw * SAW_DAMAGE_DISTRIBUTION + dyzkB.saw * (1.0f - SAW_DAMAGE_DISTRIBUTION)) * RPM_DAMAGE_ROTATION_SCALE;
+            float slashDamageA = (1 - Math.Abs(hitMoveRateB)) * RPM_DAMAGE_SLASH_SCALE;
+            float slashDamageB = (1 - Math.Abs(hitMoveRateA)) * RPM_DAMAGE_SLASH_SCALE;
+            float finalAngularDamageA = massRateB * (speedBasedRPMDamageA + rotationBasedRPMDamageA + slashDamageA);
+            float finalAngularDamageB = massRateA * (speedBasedRPMDamageB + rotationBasedRPMDamageB + slashDamageB);
+            float spinA = Math.Sign(dyzkA.angularVelocity);
+            float spinB = Math.Sign(dyzkB.angularVelocity);
 
+            dyzkA.angularVelocity -= finalAngularDamageA * spinA;
+            dyzkB.angularVelocity -= finalAngularDamageB * spinB;
+
+            // If the dyzx have switched spins, keep them at 0
+            if (dyzkA.angularVelocity * spinA < 0.0f) { dyzkA.angularVelocity = 0.0f; }
+            if (dyzkB.angularVelocity * spinB < 0.0f) { dyzkB.angularVelocity = 0.0f; }
+
+            //=========================================================================
             // Debug stuff
+            //-------------------------            
             if (dyzkA.collisionDebug.isInCollision)
             {
                 dyzkA.collisionDebug.preservedForce += preservedForceA;
