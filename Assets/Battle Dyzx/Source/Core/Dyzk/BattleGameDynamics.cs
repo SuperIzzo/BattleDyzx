@@ -6,33 +6,21 @@ namespace BattleDyzx
     {
         public void Tick(BattleGameState state)
         {
-            UpdateDyzx(state);
+            UpdateGameState(state);
         }
 
-        private void UpdateDyzx(BattleGameState state)
+        public void UpdateGameState(BattleGameState state)
         {
             float dt = state.dynamicsTimeStep;
 
             // Update physics
             foreach (DyzkState dyzk in state.dyzx)
             {
-                dyzk.angle += dyzk.angularVelocity * dt;
-
-                dyzk.position += dyzk.velocity * dt;
-                dyzk.velocity += dyzk.acceleration * dt;
-                dyzk.velocity *= 0.995f; // friction
-
                 dyzk.normal = state.arena.SampleNormalScaled(dyzk.position.x, dyzk.position.y);
                 dyzk.ground = state.arena.SampleElevationScaled(dyzk.position.x, dyzk.position.y);
+                dyzk.gravity = state.gravity;
 
-                // TODO: Consider applying this only to dyzx on the ground
-                Vector3D normalForce = dyzk.normal * dyzk.normal.Dot(dyzk.acceleration);
-                dyzk.acceleration = state.gravity;
-                dyzk.acceleration -= normalForce;
-
-                dyzk.position.z = Math.Max(dyzk.position.z, dyzk.ground);
-
-                dyzk.acceleration += dyzk.control * dyzk.speed;
+                UpdateDyzk(dyzk, dt);
 
                 dyzk.collisionDebug.isInCollision = false;
             }
@@ -65,17 +53,90 @@ namespace BattleDyzx
             }
         }
 
-        void HandleDyzkCollision(DyzkState dyzkA, DyzkState dyzkB)
+        public void UpdateDyzk(DyzkState dyzk, float dt)
         {
-            // 1 means dyzx are independed, 0.5 means velocities are share half-half, 0 means velocity only affects opponent
+            //=========================================================================
+            // Constants
+            //-------------------------
+            const float LINEAR_FRICTION = 0.005f;
+            const float ANGULAR_ACCELERATION = -0.1f;
+            const float DISBALANCE_ANGULAR_ACCELERATION_FACTOR = 2.0f;
+
+            //=========================================================================
+            // Linear Integration
+            //-------------------------
+            dyzk.position += dyzk.velocity * dt;
+            dyzk.velocity += dyzk.acceleration * dt;
+            dyzk.velocity *= (1.0f - LINEAR_FRICTION);
+
+            // TODO: Consider applying this only to dyzx on the ground
+            Vector3D normalForce = dyzk.normal * dyzk.normal.Dot(dyzk.acceleration);
+            dyzk.acceleration = dyzk.gravity;
+            dyzk.acceleration -= normalForce;
+
+            dyzk.position.z = Math.Max(dyzk.position.z, dyzk.ground);
+
+            dyzk.acceleration += dyzk.control * dyzk.speed;
+
+            //=========================================================================
+            // Angular Integration
+            //-------------------------
+            float disbalanceDecelFactor = 1.0f + (1.0f - dyzk.balance) * (DISBALANCE_ANGULAR_ACCELERATION_FACTOR - 1.0f);
+            dyzk.angle += dyzk.angularVelocity * dt;
+            dyzk.angularVelocity += ANGULAR_ACCELERATION * disbalanceDecelFactor * dt;
+        }
+
+        public void HandleDyzkCollision(DyzkState dyzkA, DyzkState dyzkB)
+        {
+            //=========================================================================
+            // Constants
+            //-------------------------
+
+            // Force distribution between the two dyzx,
+            // i.e. how much does the velocity of one dyzk affect the other
+            // 1.0 - means dyzx are independent (A knocks back B, and B knocks back A)
+            // 0.5 - means velocities are shared half-half (half of A's velocity goes back to it)
+            // 0.0 - means velocity only affects opponent 
             const float FORCE_DISTRIBUTION = 0.8f;
 
-
+            // Likewise tangent force distribution is about how much tantial rotation force is shared
             const float TANGENT_FORCE_DISTRIBUTION = 0.8f;
+
+            // Knockback negation is when dyzx are pushing towards the hit, part of the knockback can be negated.
+            // Conversly pushing away from the hit increases knockback received from the other dyzk.
+            // How is knockback negation distributed between players (1 - defender is sole negator, 0 - attacker is sole negator)
+            // and what is the maximum scale (1 - fully negate, 0 - no negation)
+            const float MAX_KNOCKBACK_CONTROL_SCALE = 0.5f;
+
+            // How much does angular velocities factor into the knockback
+            const float SPIN_KNOCKBACK_FACTOR = 0.01f;
+
+            // How much tangent force to apply
+            const float TANGENT_FACTOR = 0.1f;
+
+            // A scale factor to increase or decrease RPM damage based on rotation
+            const float RPM_DAMAGE_ROTATION_SCALE = 1.0f;
+
+            // A scale factor to increase or decrease RPM damage based on speed
+            const float RPM_DAMAGE_SPEED_SCALE = 1.0f;
+
+            // A scale factor to increase or decrease RPM damage based on direction (tangent)
+            const float RPM_DAMAGE_SLASH_SCALE = 1.0f;
+
+            // How to distribute speed damage between attacker and defender
+            const float SPEED_DAMAGE_DISTRIBUTION = 0.8f;
+
+            // How to distribute saw damage between attacker and defender
+            const float SAW_DAMAGE_DISTRIBUTION = 0.7f;
+            
+
+            //=========================================================================
+            // Useful variables
+            //-------------------------
 
             float radDistance = dyzkA.maxRadius + dyzkB.maxRadius;
             float radRatio = dyzkA.maxRadius / radDistance;
-            
+
             Vector3D hitPoint = dyzkA.position * (1 - radRatio) + dyzkB.position * radRatio;
             Vector3D hitNormal = dyzkB.position - dyzkA.position;
 
@@ -106,12 +167,16 @@ namespace BattleDyzx
             // Calculate masses
             float totalMass = dyzkA.mass + dyzkB.mass;
             float massRateA = dyzkA.mass / totalMass;
-            float massRateB = dyzkB.mass / totalMass;
+            float massRateB = 1.0f - massRateA;
+
+            //=========================================================================
+            // Knockback
+            //-------------------------
 
             // How much dyzkA's momentum is affecting dyzkB relatively and vice-versa
             // This is a function of both if B is moving away, A exerts higher force
-            float forceRateA = Math.Clamp01(hitMoveRateA * FORCE_DISTRIBUTION - hitMoveRateB * (1-FORCE_DISTRIBUTION));
-            float forceRateB = Math.Clamp01(hitMoveRateB * FORCE_DISTRIBUTION - hitMoveRateA * (1-FORCE_DISTRIBUTION));
+            float forceRateA = Math.Clamp01(hitMoveRateA * FORCE_DISTRIBUTION - hitMoveRateB * (1 - FORCE_DISTRIBUTION));
+            float forceRateB = Math.Clamp01(hitMoveRateB * FORCE_DISTRIBUTION - hitMoveRateA * (1 - FORCE_DISTRIBUTION));
 
             // How much of the two dyzx momentum carries over
             float preservedAmountA = speedA * (1 - forceRateA);
@@ -119,27 +184,58 @@ namespace BattleDyzx
             Vector2D preservedForceA = directionA * preservedAmountA;
             Vector2D preservedForceB = directionB * preservedAmountB;
 
+            // The direction of the knock-back (hit normal unless pushing away)
+            Vector2D knockbackDirectionA;
+            Vector2D knockbackDirectionB;
+
+            if (hitControlRateA > 0)
+            {
+                knockbackDirectionA = -hitNormal2D;
+            }
+            else
+            {
+                knockbackDirectionA = controlA - hitNormal2D;
+                knockbackDirectionA.Normalize();
+            }
+
+            if (hitControlRateB > 0)
+            {
+                knockbackDirectionB = hitNormal2D;
+            }
+            else
+            {
+                knockbackDirectionB = controlB + hitNormal2D;
+                knockbackDirectionB.Normalize();
+            }
+
+            // Knock-back control factor
+            float hitControlRateScale = (hitControlRateA * Math.Abs(hitControlRateA) - hitControlRateB * Math.Abs(hitControlRateB)) * 0.5f;
+            float knockbackControlFactorA = Math.Max(0.0f, 1.0f - hitControlRateScale) * MAX_KNOCKBACK_CONTROL_SCALE;
+            float knockbackControlFactorB = Math.Max(0.0f, 1.0f + hitControlRateScale) * MAX_KNOCKBACK_CONTROL_SCALE;
+
             // How much force is applied as knock-back onto the other dyzk
-            float knockbackSawSpeed = (dyzkA.saw*dyzkA.saw + dyzkA.saw * dyzkB.saw + dyzkB.saw * dyzkB.saw) * (dyzkA.angularVelocity + dyzkA.angularVelocity) * 0.01f;
-            float knockbackAmountA = (speedA + knockbackSawSpeed) * forceRateA * massRateA;
-            float knockbackAmountB = (speedB + knockbackSawSpeed) * forceRateB * massRateB;
-            Vector2D knockbackForceA = hitNormal2D * knockbackAmountA;
-            Vector2D knockbackForceB = hitNormal2D * -knockbackAmountB;
+            float knockbackBalanceFactor = 2.0f - dyzkA.balance - dyzkB.balance;
+            float dyzkSawFactor = dyzkA.saw * dyzkA.saw + dyzkA.saw * dyzkB.saw + dyzkB.saw * dyzkB.saw;
+            float rotationalKnockback = (knockbackBalanceFactor + dyzkSawFactor) * Math.Abs(dyzkA.angularVelocity + dyzkB.angularVelocity) * SPIN_KNOCKBACK_FACTOR;
+            float knockbackAmountA = (speedB * forceRateB + rotationalKnockback) * massRateB * knockbackControlFactorA;
+            float knockbackAmountB = (speedA * forceRateA + rotationalKnockback) * massRateA * knockbackControlFactorB;
+            Vector2D knockbackForceA = knockbackDirectionA * knockbackAmountA;
+            Vector2D knockbackForceB = knockbackDirectionB * knockbackAmountB;
 
-            // How much tangential force to apply (tangential force is generate from spinning)
-            // TODO: Tangential direction should be relative to the spin direction
-            // TODO: It should also be relative to the radiuses (converting torque to linear)
-            float tangentTerm = (dyzkA.saw + dyzkB.saw) * 0.0001f;
-            float tangentAmountA = tangentTerm * massRateA * (dyzkA.angularVelocity * TANGENT_FORCE_DISTRIBUTION + dyzkB.angularVelocity * (1 - TANGENT_FORCE_DISTRIBUTION));
-            float tangentAmountB = tangentTerm * massRateB * (dyzkB.angularVelocity * TANGENT_FORCE_DISTRIBUTION + dyzkA.angularVelocity * (1 - TANGENT_FORCE_DISTRIBUTION));
-            
-            Vector2D tangentDirA = new Vector2D(-hitNormal2D.y, hitNormal2D.x); 
-            Vector2D tangentDirB = new Vector2D(hitNormal2D.y, -hitNormal2D.x);
-            Vector2D tangentForceA = (tangentDirA * 0.7f - hitNormal2D * 0.3f) * tangentAmountA;
-            Vector2D tangentForceB = (tangentDirB * 0.7f + hitNormal2D * 0.3f) * tangentAmountB;
+            // How much tangential force to apply (tangential force is generated from spinning)
 
-            Vector2D finalForceA = preservedForceA + knockbackForceB + tangentForceB;
-            Vector2D finalForceB = preservedForceB + knockbackForceA + tangentForceA;
+            // L = m*v*r, but we factor in mass later as a proportion
+            float dyzkAAngularMomentum = dyzkA.angularVelocity * dyzkA.maxRadius;
+            float dyzkBAngularMomentum = dyzkB.angularVelocity * dyzkB.maxRadius;
+            float tangentAmountA = massRateB * (dyzkBAngularMomentum * TANGENT_FORCE_DISTRIBUTION + dyzkAAngularMomentum * (1 - TANGENT_FORCE_DISTRIBUTION)) * TANGENT_FACTOR;
+            float tangentAmountB = massRateA * (dyzkAAngularMomentum * TANGENT_FORCE_DISTRIBUTION + dyzkBAngularMomentum * (1 - TANGENT_FORCE_DISTRIBUTION)) * TANGENT_FACTOR;
+            Vector2D tangentDirA = new Vector2D(-hitNormal2D.y, hitNormal2D.x);
+            Vector2D tangentDirB = -tangentDirA;
+            Vector2D tangentForceA = tangentDirA * tangentAmountA;
+            Vector2D tangentForceB = tangentDirB * tangentAmountB;
+
+            Vector2D finalForceA = preservedForceA + knockbackForceA + tangentForceA;
+            Vector2D finalForceB = preservedForceB + knockbackForceB + tangentForceB;
 
             dyzkA.velocity = finalForceA;
             dyzkB.velocity = finalForceB;
@@ -153,10 +249,32 @@ namespace BattleDyzx
                 dyzkB.position.y = dyzkB.position.y + hitNormal.y * intersectionAmount;
             }
 
+            //=========================================================================
+            // RPM Damage
+            //-------------------------
+            float speedBasedRPMDamageA = (speedB * SPEED_DAMAGE_DISTRIBUTION + speedA * (1 - SPEED_DAMAGE_DISTRIBUTION)) * RPM_DAMAGE_SPEED_SCALE;
+            float speedBasedRPMDamageB = (speedA * SPEED_DAMAGE_DISTRIBUTION + speedB * (1 - SPEED_DAMAGE_DISTRIBUTION)) * RPM_DAMAGE_SPEED_SCALE;
+            float rotationBasedRPMDamageA = (dyzkB.saw * SAW_DAMAGE_DISTRIBUTION + dyzkA.saw * (1.0f - SAW_DAMAGE_DISTRIBUTION)) * RPM_DAMAGE_ROTATION_SCALE;
+            float rotationBasedRPMDamageB = (dyzkA.saw * SAW_DAMAGE_DISTRIBUTION + dyzkB.saw * (1.0f - SAW_DAMAGE_DISTRIBUTION)) * RPM_DAMAGE_ROTATION_SCALE;
+            float slashDamageA = (1 - Math.Abs(hitMoveRateB)) * RPM_DAMAGE_SLASH_SCALE;
+            float slashDamageB = (1 - Math.Abs(hitMoveRateA)) * RPM_DAMAGE_SLASH_SCALE;
+            float finalAngularDamageA = massRateB * (speedBasedRPMDamageA + rotationBasedRPMDamageA + slashDamageA);
+            float finalAngularDamageB = massRateA * (speedBasedRPMDamageB + rotationBasedRPMDamageB + slashDamageB);
+            float spinA = Math.Sign(dyzkA.angularVelocity);
+            float spinB = Math.Sign(dyzkB.angularVelocity);
 
+            dyzkA.angularVelocity -= finalAngularDamageA * spinA;
+            dyzkB.angularVelocity -= finalAngularDamageB * spinB;
+
+            // If the dyzx have switched spins, keep them at 0
+            if (dyzkA.angularVelocity * spinA < 0.0f) { dyzkA.angularVelocity = 0.0f; }
+            if (dyzkB.angularVelocity * spinB < 0.0f) { dyzkB.angularVelocity = 0.0f; }
+
+            //=========================================================================
             // Debug stuff
+            //-------------------------            
             if (dyzkA.collisionDebug.isInCollision)
-            {                
+            {
                 dyzkA.collisionDebug.preservedForce += preservedForceA;
                 dyzkA.collisionDebug.knockbackForce += knockbackForceB;
                 dyzkA.collisionDebug.tangentForce += tangentForceB;
