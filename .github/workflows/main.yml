@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: Build and test project ✨
+    name: Build and test project 🏗️
     runs-on: ubuntu-latest
     steps:
       # Checkout (without LFS)
@@ -29,7 +29,8 @@ jobs:
           git reset --hard
 
       # Cache
-      - uses: actions/cache@v2
+      - name: Restore Library cache
+        uses: actions/cache@v2
         with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
@@ -55,7 +56,8 @@ jobs:
           targetPlatform: WebGL
 
       # Output
-      - uses: actions/upload-artifact@v2
+      - name: Upload build ⤴️
+        uses: actions/upload-artifact@v2
         with:
           name: Build
           path: build
