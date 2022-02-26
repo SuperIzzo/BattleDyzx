@@ -183,5 +183,71 @@ namespace BattleDyzx.Test
             Assert.AreEqual(0.0f, defenceRPMCW, "Enough damage on CW spinning dyzk should bring it down to 0 and not overshoot.");
             Assert.AreEqual(0.0f, defenceRPMCCW, "Enough damage on CCW spinning dyzk should bring it up to 0 and not overshoot.");
         }
+
+        [Test]
+        public void RPMReducesOverTime()
+        {
+            DyzkState dyzk = CreateDyzkA();
+
+            float preUpdateRPM = Math.Abs(dyzk.RPM);
+            battleDynamics.UpdateDyzk(dyzk, 1.0f);
+            float postUpdateRPM = Math.Abs(dyzk.RPM);
+
+            Assert.Less(postUpdateRPM, preUpdateRPM, "Dyzk RPM should reduce over time.");
+        }
+
+        [Test]
+        public void RPMReducesMoreOverMoreTime()
+        {
+            DyzkState dyzk1Step1 = CreateDyzkA();
+            DyzkState dyzk1Step2 = CreateDyzkA();
+            DyzkState dyzk2Step1 = CreateDyzkA();
+
+            battleDynamics.UpdateDyzk(dyzk1Step1, 1.0f);
+            battleDynamics.UpdateDyzk(dyzk1Step2, 2.0f);
+            battleDynamics.UpdateDyzk(dyzk2Step1, 1.0f);
+            battleDynamics.UpdateDyzk(dyzk2Step1, 1.0f);
+
+            float dyzk1Step1PostUpdateRPM = Math.Abs(dyzk1Step1.RPM);
+            float dyzk1Step2PostUpdateRPM = Math.Abs(dyzk1Step2.RPM);
+            float dyzk2Step1PostUpdateRPM = Math.Abs(dyzk2Step1.RPM);
+
+            Assert.Less(dyzk1Step2PostUpdateRPM, dyzk1Step1PostUpdateRPM, "Dyzk RPM should reduce more over longer timestep.");
+            Assert.Less(dyzk2Step1PostUpdateRPM, dyzk1Step1PostUpdateRPM, "Dyzk RPM should reduce more over more timesteps.");
+        }
+
+        [Test]
+        public void RPMReducesTheSameOverTheSameAmountOfTimeOverDifferentNumberOfTimesteps()
+        {
+            DyzkState dyzk1Step2 = CreateDyzkA();
+            DyzkState dyzk2Step1 = CreateDyzkA();            
+
+            battleDynamics.UpdateDyzk(dyzk1Step2, 2.0f);
+            battleDynamics.UpdateDyzk(dyzk2Step1, 1.0f);
+            battleDynamics.UpdateDyzk(dyzk2Step1, 1.0f);
+
+            float dyzk1Step2PostUpdateRPM = Math.Abs(dyzk1Step2.RPM);
+            float dyzk2Step1PostUpdateRPM = Math.Abs(dyzk2Step1.RPM);
+
+            Assert.AreEqual(dyzk1Step2PostUpdateRPM, dyzk2Step1PostUpdateRPM, "Dyzk RPM should reduce equally over the same total amount of time.");
+        }
+
+        [Test]
+        public void DisbalancedDyzxLoseMoreRPMOverTime()
+        {
+            DyzkState dyzkDisbalanced = CreateDyzkA();
+            DyzkState dyzkBalanced = CreateDyzkA();
+
+            dyzkDisbalanced.balance = 0.8f;
+            dyzkBalanced.balance = 1.0f;
+
+            battleDynamics.UpdateDyzk(dyzkDisbalanced, 1.0f);
+            battleDynamics.UpdateDyzk(dyzkBalanced, 1.0f);
+
+            float dyzkDisbalancedPostUpdateRPM = Math.Abs(dyzkDisbalanced.RPM);
+            float dyzkBalancedPostUpdateRPM = Math.Abs(dyzkBalanced.RPM);
+
+            Assert.Less(dyzkDisbalancedPostUpdateRPM, dyzkBalancedPostUpdateRPM, "Disbalanced dyzx should lose RPM faster.");
+        }
     }
 }

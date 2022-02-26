@@ -16,7 +16,7 @@ namespace BattleDyzx.Test
                     maxRadius = 0.02f,  // 2cm
                     mass = 0.001f,      // ~10g     
                     saw = 0.1f,         // 10%
-                    balance = 1.0f,     // 100%
+                    balance = 0.95f,     // 95%
                 },
 
                 angularVelocity = 1000,

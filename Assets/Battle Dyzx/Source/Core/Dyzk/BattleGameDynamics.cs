@@ -6,33 +6,21 @@ namespace BattleDyzx
     {
         public void Tick(BattleGameState state)
         {
-            UpdateDyzx(state);
+            UpdateGameState(state);
         }
 
-        public void UpdateDyzx(BattleGameState state)
+        public void UpdateGameState(BattleGameState state)
         {
             float dt = state.dynamicsTimeStep;
 
             // Update physics
             foreach (DyzkState dyzk in state.dyzx)
             {
-                dyzk.angle += dyzk.angularVelocity * dt;
-
-                dyzk.position += dyzk.velocity * dt;
-                dyzk.velocity += dyzk.acceleration * dt;
-                dyzk.velocity *= 0.995f; // friction
-
                 dyzk.normal = state.arena.SampleNormalScaled(dyzk.position.x, dyzk.position.y);
                 dyzk.ground = state.arena.SampleElevationScaled(dyzk.position.x, dyzk.position.y);
+                dyzk.gravity = state.gravity;
 
-                // TODO: Consider applying this only to dyzx on the ground
-                Vector3D normalForce = dyzk.normal * dyzk.normal.Dot(dyzk.acceleration);
-                dyzk.acceleration = state.gravity;
-                dyzk.acceleration -= normalForce;
-
-                dyzk.position.z = Math.Max(dyzk.position.z, dyzk.ground);
-
-                dyzk.acceleration += dyzk.control * dyzk.speed;
+                UpdateDyzk(dyzk, dt);
 
                 dyzk.collisionDebug.isInCollision = false;
             }
@@ -63,6 +51,39 @@ namespace BattleDyzx
                     HandleDyzkCollision(dyzkA, dyzkB);
                 }
             }
+        }
+
+        public void UpdateDyzk(DyzkState dyzk, float dt)
+        {
+            //=========================================================================
+            // Constants
+            //-------------------------
+            const float LINEAR_FRICTION = 0.005f;
+            const float ANGULAR_ACCELERATION = -0.1f;
+            const float DISBALANCE_ANGULAR_ACCELERATION_FACTOR = 2.0f;
+
+            //=========================================================================
+            // Linear Integration
+            //-------------------------
+            dyzk.position += dyzk.velocity * dt;
+            dyzk.velocity += dyzk.acceleration * dt;
+            dyzk.velocity *= (1.0f - LINEAR_FRICTION);
+
+            // TODO: Consider applying this only to dyzx on the ground
+            Vector3D normalForce = dyzk.normal * dyzk.normal.Dot(dyzk.acceleration);
+            dyzk.acceleration = dyzk.gravity;
+            dyzk.acceleration -= normalForce;
+
+            dyzk.position.z = Math.Max(dyzk.position.z, dyzk.ground);
+
+            dyzk.acceleration += dyzk.control * dyzk.speed;
+
+            //=========================================================================
+            // Angular Integration
+            //-------------------------
+            float disbalanceDecelFactor = 1.0f + (1.0f - dyzk.balance) * (DISBALANCE_ANGULAR_ACCELERATION_FACTOR - 1.0f);
+            dyzk.angle += dyzk.angularVelocity * dt;
+            dyzk.angularVelocity += ANGULAR_ACCELERATION * disbalanceDecelFactor * dt;
         }
 
         public void HandleDyzkCollision(DyzkState dyzkA, DyzkState dyzkB)

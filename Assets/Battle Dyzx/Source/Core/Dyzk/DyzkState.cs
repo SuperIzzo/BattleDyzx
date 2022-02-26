@@ -89,6 +89,7 @@
         public Vector3D control;
 
         public Vector3D normal = Vector3D.up;
+        public Vector3D gravity = Vector3D.down;
         public float ground = 0.0f;
 
         public float angle;             // in radians
