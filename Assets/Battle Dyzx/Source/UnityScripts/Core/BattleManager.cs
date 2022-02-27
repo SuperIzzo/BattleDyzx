@@ -28,17 +28,35 @@ namespace BattleDyzx
         [SerializeField]
         private int numDummies;
 
-        [SerializeField]
-        private DyzkDatabase dyzkDatabase;
+        private List<DyzkController> _dyzkControllers = new List<DyzkController>();
 
         BattleGameState battleState;
         BattleGameDynamics battleDynamics;
 
-        static BattleManager battleManager;
-        
+        private static BattleManager _instance;
+        public static BattleManager instance
+        {
+            get
+            {
+                if (!_instance)
+                {
+                    _instance = FindObjectOfType<BattleManager>();
+                }
+                return _instance;
+            }
+        }
+
+        public delegate void DyzkControllerEvent(DyzkController dyzkController);
+        public event DyzkControllerEvent OnDyzkControllerAdded;
+
+        void Awake()
+        {
+            _instance = this;
+        }
+
         void Start()
         {
-            SetupState();            
+            SetupState();
             SetupDynamics();
         }
 
@@ -64,7 +82,7 @@ namespace BattleDyzx
                 arena = Instantiate(arenaPrefab);
             }
             arena.arenaState = battleState.arena;
-            
+
             float arenaHalfWidth = battleState.arena.width * 0.5f;
             float arenaHalfHeight = battleState.arena.width * 0.5f;
             float arenaDepth = battleState.arena.depth;
@@ -85,25 +103,31 @@ namespace BattleDyzx
                 if (i < numPlayers)
                 {
                     var playerController = dyzk.gameObject.AddComponent<DyzkPlayerController>();
+                    playerController.playerId = i;
                     playerController.controllerId = i;
+                    AddDyzkController(playerController);
                 }
                 else if (i < numPlayers + numAI)
                 {
                     var aiController = dyzk.gameObject.AddComponent<DyzkAIController>();
-                }    
+                    aiController.playerId = i;
+                    AddDyzkController(aiController);
+                }
             }
         }
 
-        Dyzk CreateRandomDyzk(Vector3D spawnLocation)
+        private Dyzk CreateRandomDyzk(Vector3D spawnLocation)
         {
-            int dyzkIdx = Random.Range(0, dyzkDatabase.dyzkTextures.Count);
-            Texture2D dyzkTexture = dyzkDatabase.dyzkTextures[dyzkIdx];
+            DyzkDatabase dyzkDB = ConfigManager.dyzkDatabase;
+
+            int dyzkIdx = Random.Range(0, dyzkDB.dyzkTextures.Count);
+            Texture2D dyzkTexture = dyzkDB.dyzkTextures[dyzkIdx];
 
             IImageData imageData = new Texture2DImageData(dyzkTexture);
             DyzkImageAnalysis analysis = new DyzkImageAnalysis(imageData, 0.05f);
 
             DyzkData dyzkData = analysis.CreateDyzkData();
-            DyzkState dyzkState = battleState.CreateDyzk(dyzkData);            
+            DyzkState dyzkState = battleState.CreateDyzk(dyzkData);
             dyzkState.position = spawnLocation;
             dyzkState.speed = dyzkData.maxSpeed;
             dyzkState.RPM = dyzkData.maxRPM;
@@ -122,9 +146,25 @@ namespace BattleDyzx
             battleState.gravity = new Vector3D(0, 0, -4);
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
             battleDynamics.Tick(battleState);
+        }
+
+        private void AddDyzkController(DyzkController dyzkController)
+        {
+            while(_dyzkControllers.Count <= dyzkController.playerId)
+            {
+                _dyzkControllers.Add(null);
+            }
+
+            _dyzkControllers[dyzkController.playerId] = dyzkController;
+            OnDyzkControllerAdded?.Invoke(dyzkController);
+        }
+
+        public DyzkController GetDyzkController(int playerId)
+        {
+            return playerId >= 0 && playerId < _dyzkControllers.Count ? _dyzkControllers[playerId] : null;
         }
     }
 }

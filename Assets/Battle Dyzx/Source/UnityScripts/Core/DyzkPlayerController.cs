@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BattleDyzx
 {
-    public class DyzkPlayerController : MonoBehaviour
+    public class DyzkPlayerController : DyzkController
     {        
         public int controllerId
         {
@@ -16,14 +16,11 @@ namespace BattleDyzx
             }
         }
         private int _controllerId = 0;
-
-        private Dyzk dyzk;
         private string horizontalAxis;
         private string verticalAxis;
 
         void Start()
         {
-            dyzk = GetComponent<Dyzk>();
             UpdateControls();
         }
 

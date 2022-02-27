@@ -76,12 +76,12 @@ namespace BattleDyzx
 
             if (debugRenderForces)
             {
-                renderer.material.SetColor("_Color", dyzkState.collisionDebug.isInCollision ? Color.red : Color.white);
+                renderer.material.SetColor("_Color", dyzkState.collisionData.numDyzkCollisions > 0 ? Color.red : Color.white);
 
-                var preservedForce = new Vector3(dyzkState.collisionDebug.preservedForce.x, 0, dyzkState.collisionDebug.preservedForce.y);
-                var knockbackForce = new Vector3(dyzkState.collisionDebug.knockbackForce.x, 0, dyzkState.collisionDebug.knockbackForce.y);
-                var tangentForce = new Vector3(dyzkState.collisionDebug.tangentForce.x, 0, dyzkState.collisionDebug.tangentForce.y);
-                var finalForce = new Vector3(dyzkState.collisionDebug.finalForce.x, 0, dyzkState.collisionDebug.finalForce.y);
+                var preservedForce = new Vector3(dyzkState.collisionData.preservedForce.x, 0, dyzkState.collisionData.preservedForce.y);
+                var knockbackForce = new Vector3(dyzkState.collisionData.knockbackForce.x, 0, dyzkState.collisionData.knockbackForce.y);
+                var tangentForce = new Vector3(dyzkState.collisionData.tangentForce.x, 0, dyzkState.collisionData.tangentForce.y);
+                var finalForce = new Vector3(dyzkState.collisionData.finalForce.x, 0, dyzkState.collisionData.finalForce.y);
 
                 Debug.DrawLine(transform.position, transform.position + preservedForce, Color.blue);
                 Debug.DrawLine(transform.position, transform.position + knockbackForce, Color.red);
