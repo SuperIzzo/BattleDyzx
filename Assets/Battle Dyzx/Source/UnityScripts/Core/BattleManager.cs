@@ -105,12 +105,14 @@ namespace BattleDyzx
                     var playerController = dyzk.gameObject.AddComponent<DyzkPlayerController>();
                     playerController.playerId = i;
                     playerController.controllerId = i;
+                    playerController.playerName = "P" + (i + 1);
                     AddDyzkController(playerController);
                 }
                 else if (i < numPlayers + numAI)
                 {
                     var aiController = dyzk.gameObject.AddComponent<DyzkAIController>();
                     aiController.playerId = i;
+                    aiController.playerName = "AI";
                     AddDyzkController(aiController);
                 }
             }
