@@ -59,7 +59,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71dcaf9326b1cbb47a3049039405b1e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerId: -1
   _playerLabel: {fileID: 4979245717220326736}
 --- !u!114 &4979245717220326736
 MonoBehaviour:
@@ -119,6 +118,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1252728914818177464}
+  - component: {fileID: 2296366284683597132}
   - component: {fileID: 42486802571634886}
   m_Layer: 5
   m_Name: RPMWidget
@@ -149,6 +149,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2296366284683597132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1252728914818177467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc89af61da8adb74b97c6f71a4d5d4c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dyzkControllerId: -1
 --- !u!114 &42486802571634886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -163,7 +176,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _currentRPMBar: {fileID: 7364233707047826054}
   _damageRPMBar: {fileID: 7364233708192453333}
-  _playerId: -1
   _damageResetTime: 1
 --- !u!1 &1281691408742134557
 GameObject:
@@ -216,7 +228,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 433014c4c3a56bd419add8f548db1608, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerId: -1
   _image: {fileID: 3687162193159047501}
 --- !u!222 &2585196652178050962
 CanvasRenderer:

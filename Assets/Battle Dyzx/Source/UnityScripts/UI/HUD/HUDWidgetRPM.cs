@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace BattleDyzx
 {
-    public class RPMWidget : MonoBehaviour
+    public class HUDWidgetRPM : HUDWidgetBase
     {
         [SerializeField]
         private Image _currentRPMBar;
@@ -14,18 +14,7 @@ namespace BattleDyzx
         private Image _damageRPMBar;
 
         [SerializeField]
-        private int _playerId = -1;
-
-        [SerializeField]
         float _damageResetTime = 1.0f;
-
-        public DyzkController dyzkController
-        {
-            get => BattleManager.instance?.GetDyzkController(_playerId);
-            set { _playerId = value ? value.playerId : -1; }
-        }
-
-        public Dyzk dyzk { get => dyzkController?.dyzk; }
 
         float _damageTimer;
 
@@ -33,11 +22,8 @@ namespace BattleDyzx
 
         private void Update()
         {
-            if (ConfigManager.playerColors && _playerId >= 0 && _playerId < ConfigManager.playerColors.Count)
-            {
-                _currentRPMBar.color = ConfigManager.playerColors[_playerId];
-                _damageRPMBar.color = Color.Lerp(_currentRPMBar.color, Color.black, 0.5f);
-            }
+            _currentRPMBar.color = playerColor;
+            _damageRPMBar.color = Color.Lerp(_currentRPMBar.color, Color.black, 0.5f);
 
             if (dyzk)
             {

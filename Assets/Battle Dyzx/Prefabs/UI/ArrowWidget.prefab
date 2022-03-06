@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4645154105604293137}
+  - component: {fileID: 6726643708710372572}
   - component: {fileID: 5704813238118149822}
   m_Layer: 5
   m_Name: ArrowWidget
@@ -33,11 +34,24 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6726643708710372572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1423710258203678113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc89af61da8adb74b97c6f71a4d5d4c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dyzkControllerId: -1
 --- !u!114 &5704813238118149822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50,7 +64,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39eae18b18d8c3c48afea331ebb6bf20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerId: -1
   _indicatorArrow: {fileID: 8337075425378979803}
   _controlArrow: {fileID: 8337075423554769741}
 --- !u!1 &1466853438689761725
@@ -105,7 +118,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71dcaf9326b1cbb47a3049039405b1e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerId: -1
   _playerLabel: {fileID: 6422595061423434633}
 --- !u!222 &7693038481860161897
 CanvasRenderer:

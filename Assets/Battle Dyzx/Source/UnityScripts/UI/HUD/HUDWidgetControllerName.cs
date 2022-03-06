@@ -5,19 +5,10 @@ using UnityEngine.UI;
 
 namespace BattleDyzx
 {
-    public class PlayerNameText : MonoBehaviour
+    public class HUDWidgetControllerName : HUDWidgetBase
     {
         [SerializeField]
-        private int _playerId = -1;
-
-        [SerializeField]
         private Text _playerLabel;
-
-        public DyzkController dyzkController
-        {
-            get => BattleManager.instance?.GetDyzkController(_playerId);
-            set { _playerId = value ? value.playerId : -1; }
-        }
 
         private Color _originalOutlineColor;
         private Outline _playerLabelOutline;
@@ -46,15 +37,12 @@ namespace BattleDyzx
 
             if (dyzkController)
             {
-                _playerLabel.text = dyzkController.playerName;
+                _playerLabel.text = dyzkController.controllerName;
             }
 
-            if (ConfigManager.playerColors && _playerId >= 0 && _playerId < ConfigManager.playerColors.Count)
-            {
-                Color col = ConfigManager.playerColors[_playerId];
-                _playerLabel.color = new Color(col.r, col.g, col.b, _playerLabel.color.a);
-                playerLabelOutline.effectColor = col * _originalOutlineColor;
-            }
+            Color col = playerColor;
+            _playerLabel.color = new Color(col.r, col.g, col.b, _playerLabel.color.a);
+            playerLabelOutline.effectColor = col * _originalOutlineColor;
         }
     }
 }

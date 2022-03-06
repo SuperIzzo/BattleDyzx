@@ -6,8 +6,8 @@ namespace BattleDyzx
 {
     public class DyzkController : MonoBehaviour
     {        
-        public int playerId { get; set; }
-        public string playerName { get; set; }
+        public int controllerId { get; set; }
+        public string controllerName { get; set; }
         public Dyzk dyzk { get; private set; }
 
         void Awake()

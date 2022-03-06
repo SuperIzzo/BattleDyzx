@@ -5,35 +5,21 @@ using UnityEngine.UI;
 
 namespace BattleDyzx
 {
-    public class ArrowWidget : MonoBehaviour
+    public class HUDWidgetArrows : HUDWidgetBase
     {
-        [SerializeField]
-        private int _playerId = -1;
-
         [SerializeField]
         private Image _indicatorArrow;
 
         [SerializeField]
         private Image _controlArrow;
 
-        public DyzkController dyzkController
-        {
-            get => BattleManager.instance?.GetDyzkController(_playerId);
-            set { _playerId = value ? value.playerId : -1; }
-        }
-
-        public Dyzk dyzk { get => dyzkController?.dyzk; }
-
         void Update()
         {
             if (dyzk)
             {
-                if (ConfigManager.playerColors && _playerId >= 0 && _playerId < ConfigManager.playerColors.Count)
-                {
-                    Color col = ConfigManager.playerColors[_playerId];
-                    _indicatorArrow.color = new Color(col.r, col.g, col.b, _indicatorArrow.color.a);
-                    _controlArrow.color = new Color(col.r, col.g, col.b, _controlArrow.color.a);
-                }
+                Color col = playerColor;
+                _indicatorArrow.color = new Color(col.r, col.g, col.b, _indicatorArrow.color.a);
+                _controlArrow.color = new Color(col.r, col.g, col.b, _controlArrow.color.a);
 
                 UpdateIndicatorArrow();
                 UpdateControlArrow();

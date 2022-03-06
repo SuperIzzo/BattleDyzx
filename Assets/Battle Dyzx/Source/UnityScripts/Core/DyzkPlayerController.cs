@@ -6,34 +6,34 @@ namespace BattleDyzx
 {
     public class DyzkPlayerController : DyzkController
     {        
-        public int controllerId
+        public int gamepadId
         {
-            get => _controllerId;
+            get => _gamepadId;
             set
             {
-                _controllerId = value;
-                UpdateControls();
+                _gamepadId = value;
+                UpdateInputControls();
             }
         }
-        private int _controllerId = 0;
+        private int _gamepadId = -1;
         private string horizontalAxis;
         private string verticalAxis;
 
         void Start()
         {
-            UpdateControls();
+            UpdateInputControls();
         }
 
-        void UpdateControls()
+        void UpdateInputControls()
         {
-            string playerPrefix = "P" + (controllerId + 1) + "_";
+            string playerPrefix = "P" + (gamepadId + 1) + "_";
             horizontalAxis = playerPrefix + "Horizontal";
             verticalAxis = playerPrefix + "Vertical";
         }
 
         void Update()
         {
-            if (controllerId >= 0)
+            if (gamepadId >= 0)
             {
                 dyzk.SetHorizontaInput(Input.GetAxis(horizontalAxis));
                 dyzk.SetVerticalInput(Input.GetAxis(verticalAxis));

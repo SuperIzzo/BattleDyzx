@@ -103,16 +103,16 @@ namespace BattleDyzx
                 if (i < numPlayers)
                 {
                     var playerController = dyzk.gameObject.AddComponent<DyzkPlayerController>();
-                    playerController.playerId = i;
+                    playerController.controllerName = "P" + (i + 1);
                     playerController.controllerId = i;
-                    playerController.playerName = "P" + (i + 1);
+                    playerController.gamepadId = i;                    
                     AddDyzkController(playerController);
                 }
                 else if (i < numPlayers + numAI)
                 {
                     var aiController = dyzk.gameObject.AddComponent<DyzkAIController>();
-                    aiController.playerId = i;
-                    aiController.playerName = "AI";
+                    aiController.controllerId = i;
+                    aiController.controllerName = "AI";
                     AddDyzkController(aiController);
                 }
             }
@@ -155,18 +155,18 @@ namespace BattleDyzx
 
         private void AddDyzkController(DyzkController dyzkController)
         {
-            while(_dyzkControllers.Count <= dyzkController.playerId)
+            while(_dyzkControllers.Count <= dyzkController.controllerId)
             {
                 _dyzkControllers.Add(null);
             }
 
-            _dyzkControllers[dyzkController.playerId] = dyzkController;
+            _dyzkControllers[dyzkController.controllerId] = dyzkController;
             OnDyzkControllerAdded?.Invoke(dyzkController);
         }
 
-        public DyzkController GetDyzkController(int playerId)
+        public DyzkController GetDyzkController(int controllerId)
         {
-            return playerId >= 0 && playerId < _dyzkControllers.Count ? _dyzkControllers[playerId] : null;
+            return controllerId >= 0 && controllerId < _dyzkControllers.Count ? _dyzkControllers[controllerId] : null;
         }
     }
 }
