@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace BattleDyzx
 {
+    /// <summary> A widget that shows RPM as a bar. </summary>
     public class HUDWidgetRPM : HUDWidgetBase
     {
         [SerializeField]

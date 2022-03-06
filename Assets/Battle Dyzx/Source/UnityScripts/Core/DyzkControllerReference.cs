@@ -1,9 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleDyzx
 {
+    /// <summary> 
+    /// Holds a reference to a dyzk controller. 
+    /// Used to associate a game object hierarchy with a player controller.
+    /// </summary>
     public class DyzkControllerReference : MonoBehaviour
     {
         [SerializeField]

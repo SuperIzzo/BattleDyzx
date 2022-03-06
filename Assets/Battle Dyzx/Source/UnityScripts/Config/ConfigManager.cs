@@ -1,10 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleDyzx
 {
-    [ExecuteAlways]
+    /// <summary>
+    /// A singleton component that provides readonly access to various project configurations.
+    /// </summary>
     public class ConfigManager : MonoBehaviour
     {
         [SerializeField]

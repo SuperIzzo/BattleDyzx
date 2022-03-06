@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace BattleDyzx
 {
+    /// <summary> Renders the player indicator and control direction arrows overlayed on the dyzx. </summary>
     public class HUDWidgetArrows : HUDWidgetBase
     {
         [SerializeField]

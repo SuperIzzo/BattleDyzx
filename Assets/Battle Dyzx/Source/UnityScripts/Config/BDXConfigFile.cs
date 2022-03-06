@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleDyzx
 {
+    /// <summary> A collection of all BDX configurations in one place. </summary>
     [CreateAssetMenu(fileName = "BDXConfig", menuName = "BDX/BDX Config", order = 100)]
     public class BDXConfigFile : ScriptableObject
     {

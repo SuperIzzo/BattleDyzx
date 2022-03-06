@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 
 namespace BattleDyzx
 {
+    /// <summary> Responsible for instantiating and managing HUD widget. </summary>
     public class HUDManager : MonoBehaviour
     {
         [SerializeField]

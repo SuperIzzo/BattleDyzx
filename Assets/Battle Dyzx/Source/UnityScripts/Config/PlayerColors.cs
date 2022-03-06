@@ -1,9 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleDyzx
 {
+    /// <summary> Configuration of player colors. </summary>
     [CreateAssetMenu(fileName = "BDXPlayerColors", menuName = "BDX/Player Colors Config", order = 1)]
     public class PlayerColors : ScriptableObject
     {

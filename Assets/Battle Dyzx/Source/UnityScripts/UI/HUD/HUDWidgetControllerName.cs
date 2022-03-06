@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace BattleDyzx
 {
+    /// <summary> A widget to render the dyzk controller name. </summary>
     public class HUDWidgetControllerName : HUDWidgetBase
     {
         [SerializeField]

@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace BattleDyzx
 {
+    /// <summary> A base for HUD widgets, each widget is associated with dyzk controller. </summary>
     public class HUDWidgetBase : MonoBehaviour
     {
         private DyzkControllerReference _controllerReference;

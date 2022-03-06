@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace BattleDyzx
 {
+    /// <summary> A spinning dyzk image that renders in HUD. </summary>
     public class HUDWidgetDyzkImage : HUDWidgetBase
     {
         [SerializeField]
@@ -26,6 +25,7 @@ namespace BattleDyzx
                 return;
             }
 
+            // A bit sketchy, but no sprite means we haven't set it yet
             if (!_image.sprite)
             {
                 Texture2D texture = dyzk.dyzkTexture as Texture2D;

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace BattleDyzx
 {
+    /// <summary>
+    /// Manages combat mechanics and physics including dyzk collision detection and resolution.
+    /// </summary>
     public class BattleGameDynamics
     {
         public void Tick(BattleGameState state)
