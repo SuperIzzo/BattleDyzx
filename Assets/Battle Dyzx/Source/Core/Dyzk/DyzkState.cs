@@ -20,7 +20,7 @@
 
     public struct DyzkCollisionData
     {
-        public bool isInCollision;
+        public uint numDyzkCollisions;
         public Vector2D preservedForce;
         public Vector2D knockbackForce;
         public Vector2D tangentForce;
@@ -97,7 +97,7 @@
 
         public float speed;
 
-        public DyzkCollisionData collisionDebug;
+        public DyzkCollisionData collisionData;
 
         public float RPM
         {

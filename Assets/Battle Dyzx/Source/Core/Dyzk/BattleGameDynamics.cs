@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace BattleDyzx
 {
+    /// <summary>
+    /// Manages combat mechanics and physics including dyzk collision detection and resolution.
+    /// </summary>
     public class BattleGameDynamics
     {
         public void Tick(BattleGameState state)
@@ -22,7 +24,7 @@ namespace BattleDyzx
 
                 UpdateDyzk(dyzk, dt);
 
-                dyzk.collisionDebug.isInCollision = false;
+                dyzk.collisionData.numDyzkCollisions = 0;
             }
 
             // Detect Collisions
@@ -271,40 +273,40 @@ namespace BattleDyzx
             if (dyzkB.angularVelocity * spinB < 0.0f) { dyzkB.angularVelocity = 0.0f; }
 
             //=========================================================================
-            // Debug stuff
+            // Collision summary
             //-------------------------            
-            if (dyzkA.collisionDebug.isInCollision)
+            if (dyzkA.collisionData.numDyzkCollisions > 0)
             {
-                dyzkA.collisionDebug.preservedForce += preservedForceA;
-                dyzkA.collisionDebug.knockbackForce += knockbackForceB;
-                dyzkA.collisionDebug.tangentForce += tangentForceB;
-                dyzkA.collisionDebug.finalForce += finalForceA;
+                dyzkA.collisionData.preservedForce += preservedForceA;
+                dyzkA.collisionData.knockbackForce += knockbackForceB;
+                dyzkA.collisionData.tangentForce += tangentForceB;
+                dyzkA.collisionData.finalForce += finalForceA;
             }
             else
             {
-                dyzkA.collisionDebug.preservedForce = preservedForceA;
-                dyzkA.collisionDebug.knockbackForce = knockbackForceB;
-                dyzkA.collisionDebug.tangentForce = tangentForceB;
-                dyzkA.collisionDebug.finalForce = finalForceA;
+                dyzkA.collisionData.preservedForce = preservedForceA;
+                dyzkA.collisionData.knockbackForce = knockbackForceB;
+                dyzkA.collisionData.tangentForce = tangentForceB;
+                dyzkA.collisionData.finalForce = finalForceA;
             }
 
-            if (dyzkB.collisionDebug.isInCollision)
+            if (dyzkB.collisionData.numDyzkCollisions > 0)
             {
-                dyzkB.collisionDebug.preservedForce += preservedForceB;
-                dyzkB.collisionDebug.knockbackForce += knockbackForceA;
-                dyzkB.collisionDebug.tangentForce += tangentForceA;
-                dyzkB.collisionDebug.finalForce += finalForceB;
+                dyzkB.collisionData.preservedForce += preservedForceB;
+                dyzkB.collisionData.knockbackForce += knockbackForceA;
+                dyzkB.collisionData.tangentForce += tangentForceA;
+                dyzkB.collisionData.finalForce += finalForceB;
             }
             else
             {
-                dyzkB.collisionDebug.preservedForce = preservedForceB;
-                dyzkB.collisionDebug.knockbackForce = knockbackForceA;
-                dyzkB.collisionDebug.tangentForce = tangentForceA;
-                dyzkB.collisionDebug.finalForce = finalForceB;
+                dyzkB.collisionData.preservedForce = preservedForceB;
+                dyzkB.collisionData.knockbackForce = knockbackForceA;
+                dyzkB.collisionData.tangentForce = tangentForceA;
+                dyzkB.collisionData.finalForce = finalForceB;
             }
 
-            dyzkA.collisionDebug.isInCollision = true;
-            dyzkB.collisionDebug.isInCollision = true;
+            ++dyzkA.collisionData.numDyzkCollisions;
+            ++dyzkB.collisionData.numDyzkCollisions;
         }
     }
 }

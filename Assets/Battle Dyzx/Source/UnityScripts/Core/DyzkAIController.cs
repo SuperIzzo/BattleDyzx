@@ -4,19 +4,13 @@ using UnityEngine;
 
 namespace BattleDyzx
 {
-    public class DyzkAIController : MonoBehaviour
+    public class DyzkAIController : DyzkController
     {
-        private Dyzk dyzk;
         private Dyzk targetDyzk;
 
         private float dyzkTargetTimer;
         private float dyzkTargetChangeTimeMin = 1;
         private float dyzkTargetChangeTimeMax = 10;
-
-        void Start()
-        {
-            dyzk = GetComponent<Dyzk>();
-        }
 
         private void Update()
         {

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 330427c6b166ec3409836e32885ebfb7, type: 3}
+  m_Script: {fileID: 11500000, guid: be6ab9a56d8312048b0e3b0a91e8d487, type: 3}
   m_Name: BDXData
   m_EditorClassIdentifier: 
   _dyzkTextures:
