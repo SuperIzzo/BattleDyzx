@@ -28,7 +28,7 @@ namespace BattleDyzx
             }
         }
 
-        void Update()
+        private void Update()
         {
             if (!_playerLabel)
             {

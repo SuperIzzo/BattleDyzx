@@ -11,14 +11,15 @@ namespace BattleDyzx
         private Image _image;
 
         private Quaternion _originalRotation;
-        float _rotation = 0.0f;
 
-        void Start()
+        private float _rotation = 0.0f;
+
+        private void Start()
         {
             _originalRotation = _image.rectTransform.rotation;
         }
 
-        void Update()
+        private void Update()
         {
             if (!dyzk)
             {

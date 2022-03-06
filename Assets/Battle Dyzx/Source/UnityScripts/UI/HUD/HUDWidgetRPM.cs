@@ -14,11 +14,10 @@ namespace BattleDyzx
         private Image _damageRPMBar;
 
         [SerializeField]
-        float _damageResetTime = 1.0f;
+        private float _damageResetTime = 1.0f;
 
-        float _damageTimer;
-
-        float _preDamageRPM;
+        private float _damageTimer;
+        private float _preDamageRPM;
 
         private void Update()
         {

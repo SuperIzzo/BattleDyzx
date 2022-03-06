@@ -30,8 +30,8 @@ namespace BattleDyzx
 
         private List<DyzkController> _dyzkControllers = new List<DyzkController>();
 
-        BattleGameState battleState;
-        BattleGameDynamics battleDynamics;
+        private BattleGameState battleState;
+        private BattleGameDynamics battleDynamics;
 
         private static BattleManager _instance;
         public static BattleManager instance
@@ -49,12 +49,12 @@ namespace BattleDyzx
         public delegate void DyzkControllerEvent(DyzkController dyzkController);
         public event DyzkControllerEvent OnDyzkControllerAdded;
 
-        void Awake()
+        private void Awake()
         {
             _instance = this;
         }
 
-        void Start()
+        private void Start()
         {
             SetupState();
             SetupDynamics();

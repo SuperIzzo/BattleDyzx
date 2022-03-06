@@ -13,7 +13,7 @@ namespace BattleDyzx
         [SerializeField]
         private Image _controlArrow;
 
-        void Update()
+        private void Update()
         {
             if (dyzk)
             {

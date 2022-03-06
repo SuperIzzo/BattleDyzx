@@ -19,7 +19,7 @@ namespace BattleDyzx
         [SerializeField]
         private DyzkControllerReference _arrowWidgetPrefab;
 
-        void Awake()
+        private void Awake()
         {
             BattleManager.instance.OnDyzkControllerAdded += OnDyzkControllerAdded;
         }
